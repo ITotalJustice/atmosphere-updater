@@ -25,7 +25,6 @@ void refreshScreen(int cursor)
     char *option_list[] = {"= Update AMS", "= update this app"};
 
     printf("Atmosphere-Updater: v%.1f.\n\n\n", 0.1);
-    printf("Press (X) to change download URL\n\n\n");
 
     for (int i = 0; i < 2; i++)
     {
@@ -46,7 +45,7 @@ int main(int argc, char **argv)
     // make paths
     mkdir(APP_PATH, 0777);
 
-    int cursor = 0, cursor_max = 1;
+    short cursor = 0, cursor_max = 1;
     refreshScreen(cursor);
 
     // muh loooooop
@@ -77,9 +76,9 @@ int main(int argc, char **argv)
         {
             if (cursor == UP_AMS)
             {
-                char *temp;
-                if ((temp = githubAPI(AMS_URL, TEMP_FILE)) != NULL)
-                    if (!downloadFile(temp, AMS_OUTPUT))
+                char new_url[512];
+                if ((githubAPI(AMS_URL, TEMP_FILE, new_url)) == 0)
+                    if (!downloadFile(new_url, AMS_OUTPUT))
                         unzip(AMS_OUTPUT);
             }
 
