@@ -13,6 +13,7 @@
 #define APP_PATH        "/switch/atmosphere-updater/"
 #define AMS_OUTPUT      "/switch/atmosphere-updater/ams.zip"
 #define APP_OUTPUT      "/switch/atmosphere-updater/atmosphere-updater.nro"
+#define OLD_APP_PATH    "/switch/atmosphere-updater.nro"
 #define TEMP_FILE       "/switch/atmosphere-updater/temp"
 
 #define UP_AMS          0
@@ -89,7 +90,15 @@ int main(int argc, char **argv)
                 break;
 
             case UP_APP:
-                downloadFile(APP_URL, APP_OUTPUT);
+                if (downloadFile(APP_URL, APP_OUTPUT) == 0)
+                {
+                    FILE *f = fopen(OLD_APP_PATH, "r");
+                    if (f) 
+                    {
+                        fclose(f);
+                        remove(OLD_APP_PATH);
+                    }
+                    else fclose(f);
                 break;
             }
         }
