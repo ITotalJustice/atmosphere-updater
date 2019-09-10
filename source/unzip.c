@@ -5,8 +5,8 @@
 #include <dirent.h>
 #include <switch.h>
 
-#define WRITEBUFFERSIZE 8192
-#define MAXFILENAME 256
+#define WRITEBUFFERSIZE 10000000 // 10MB
+#define MAXFILENAME     256
 
 int unzip(const char *output)
 {
@@ -58,7 +58,7 @@ int unzip(const char *output)
 
     unzClose(zfile);
     remove(output);
-    printf("\nfinished!\n");
+    printf("\nfinished!\t\tDon't forget to reboot!!!\n");
     consoleUpdate(NULL);
 
     return 0;

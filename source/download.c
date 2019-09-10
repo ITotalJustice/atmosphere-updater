@@ -8,7 +8,7 @@
 
 #define Megabytes_in_Bytes	1048576
 #define API_AGENT           "ITotalJustice"
-#define STRING_FILTER       "browser_download_url\":\""
+#define FILTER_STRING       "browser_download_url\":\""
                     
 int download_progress(void *p, double dltotal, double dlnow, double ultotal, double ulnow)
 {
@@ -31,88 +31,94 @@ int download_progress(void *p, double dltotal, double dlnow, double ultotal, dou
 int githubAPI(const char *api_url, char *temp_file, char *new_url)
 {
     CURL *curl = curl_easy_init();
-
     if (curl)
     {
         FILE *fp = fopen(temp_file, "wb");
-
-        curl_easy_setopt(curl, CURLOPT_URL, api_url);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, API_AGENT);
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-
-        // execute curl
-        CURLcode res = curl_easy_perform(curl);
-
-        //clean
-        curl_easy_cleanup(curl);
-        fclose(fp);
-
-        // slow way of reading throught the file to find a string.
-        // should use a json lib to read through the file much faster.
-        if (res == CURLE_OK)
+        if (fp)
         {
-            fp = fopen(temp_file, "r");
-            char c;
+            curl_easy_setopt(curl, CURLOPT_URL, api_url);
+            curl_easy_setopt(curl, CURLOPT_USERAGENT, API_AGENT);
+            curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 
-            while ((c = fgetc(fp)) != EOF)
+            // execute curl
+            CURLcode res = curl_easy_perform(curl);
+
+            //clean
+            curl_easy_cleanup(curl);
+            fclose(fp);
+
+            // slow way of reading throught the file to find a string.
+            // should use a json lib to read through the file much faster.
+            if (res == CURLE_OK)
             {
-                if (c == *STRING_FILTER)
+                fp = fopen(temp_file, "r");
+                char c;
+
+                while ((c = fgetc(fp)) != EOF)
                 {
-                    for (int i = 0, len = strlen(STRING_FILTER) - 1; c == STRING_FILTER[i]; i++)
+                    if (c == *FILTER_STRING)
                     {
-                        c = fgetc(fp);
-                        if (i == len)
+                        for (int i = 0, len = strlen(FILTER_STRING) - 1; c == FILTER_STRING[i]; i++)
                         {
-                            for (int j = 0; c != '\"'; j++)
+                            c = fgetc(fp);
+                            if (i == len)
                             {
-                                new_url[j] = c;
-                                new_url[j+1] = '\0';
-                                c = fgetc(fp);
+                                for (int j = 0; c != '\"'; j++)
+                                {
+                                    new_url[j] = c;
+                                    new_url[j+1] = '\0';
+                                    c = fgetc(fp);
+                                }
+                                fclose(fp);
+                                remove(temp_file);
+                                return 0;
                             }
-                            fclose(fp);
-                            remove(temp_file);
-                            return 0;
                         }
                     }
                 }
             }
         }
     }
+    printf("\n\napi get failed...\n\n");
+    consoleUpdate(NULL);
     return 1;
 }
 
 int downloadFile(const char *url, const char *output)
 {
     CURL *curl = curl_easy_init();
-
     if (curl)
     {
-        printf("\n");
         FILE *fp = fopen(output, "wb");
-
-        curl_easy_setopt(curl, CURLOPT_URL, url);
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-        curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, download_progress);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-
-        // execute curl
-        CURLcode res = curl_easy_perform(curl);
-
-        // clean
-        curl_easy_cleanup(curl);
-        fclose(fp);
-
-        if (res == CURLE_OK)
+        if (fp)
         {
-            printf("\n\ndownload complete!\n\n");
-            consoleUpdate(NULL);
-            return 0;
+            printf("\n");
+            curl_easy_setopt(curl, CURLOPT_URL, url);
+            curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+
+            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+            curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, download_progress);
+
+            // execute curl
+            CURLcode res = curl_easy_perform(curl);
+
+            // clean
+            curl_easy_cleanup(curl);
+            fclose(fp);
+
+            if (res == CURLE_OK)
+            {
+                printf("\n\ndownload complete!\n\n");
+                consoleUpdate(NULL);
+                return 0;
+            }
         }
     }
 

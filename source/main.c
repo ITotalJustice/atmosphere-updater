@@ -17,6 +17,7 @@
 
 #define UP_AMS          0
 #define UP_APP          1
+#define MAX_BUFFER      512
 
 void refreshScreen(int cursor)
 {
@@ -24,7 +25,7 @@ void refreshScreen(int cursor)
 
     char *option_list[] = {"= Update AMS", "= update this app"};
 
-    printf("Atmosphere-Updater: v%.1f.\n\n\n", 0.1);
+    printf("Atmosphere-Updater: v%.2f.\n\n\n", 0.1);
 
     for (int i = 0; i < 2; i++)
     {
@@ -59,7 +60,6 @@ int main(int argc, char **argv)
         {
             if (cursor == cursor_max) cursor = 0;
             else cursor++;
-
             refreshScreen(cursor);
         }
 
@@ -68,7 +68,6 @@ int main(int argc, char **argv)
         {
             if (cursor == 0) cursor = cursor_max;
             else cursor--;
-
             refreshScreen(cursor);
         }
 
@@ -76,7 +75,7 @@ int main(int argc, char **argv)
         {
             if (cursor == UP_AMS)
             {
-                char new_url[512];
+                char new_url[MAX_BUFFER];
                 if ((githubAPI(AMS_URL, TEMP_FILE, new_url)) == 0)
                     if (!downloadFile(new_url, AMS_OUTPUT))
                         unzip(AMS_OUTPUT);
