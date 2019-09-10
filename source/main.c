@@ -99,6 +99,7 @@ int main(int argc, char **argv)
                         remove(OLD_APP_PATH);
                     }
                     else fclose(f);
+                }
                 break;
             }
         }
