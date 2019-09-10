@@ -16,18 +16,18 @@
 #define TEMP_FILE       "/switch/atmosphere-updater/temp"
 
 #define UP_AMS          0
-#define UP_APP          1
-#define MAX_BUFFER      512
+#define UP_AMS_NCONFIG  1
+#define UP_APP          2
+#define MAX_STRLEN      512
 
 void refreshScreen(int cursor)
 {
     consoleClear();
 
-    char *option_list[] = {"= Update AMS", "= update this app"};
+    printf("Atmosphere-Updater: v%.2f.\n\n\n", 0.20);
 
-    printf("Atmosphere-Updater: v%.2f.\n\n\n", 0.1);
-
-    for (int i = 0; i < 2; i++)
+    char *option_list[] = {"= Full Atmosphere Update (recommended)", "= Update Atmosphere, not overwriting \".ini\" files", "= update this app"};
+    for (int i = 0; i < 3; i++)
     {
         if (cursor != i) printf("[ ] %s\n\n", option_list[i]);
         else printf("[X] %s\n\n", option_list[i]);
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
     // make paths
     mkdir(APP_PATH, 0777);
 
-    short cursor = 0, cursor_max = 1;
+    short cursor = 0, cursor_max = 2;
     refreshScreen(cursor);
 
     // muh loooooop
@@ -73,16 +73,25 @@ int main(int argc, char **argv)
 
         if (kDown & KEY_A)
         {
-            if (cursor == UP_AMS)
+            char new_url[MAX_STRLEN];
+            switch (cursor)
             {
-                char new_url[MAX_BUFFER];
+            case UP_AMS:
                 if ((githubAPI(AMS_URL, TEMP_FILE, new_url)) == 0)
                     if (!downloadFile(new_url, AMS_OUTPUT))
-                        unzip(AMS_OUTPUT);
-            }
+                        unzip(AMS_OUTPUT, 0);
+                break;
 
-            else if (cursor == UP_APP)
+            case UP_AMS_NCONFIG:
+                if ((githubAPI(AMS_URL, TEMP_FILE, new_url)) == 0)
+                    if (!downloadFile(new_url, AMS_OUTPUT))
+                        unzip(AMS_OUTPUT, 1);
+                break;
+
+            case UP_APP:
                 downloadFile(APP_URL, APP_OUTPUT);
+                break;
+            }
         }
         
         if (kDown & KEY_PLUS) break;

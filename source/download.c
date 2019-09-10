@@ -73,6 +73,7 @@ int githubAPI(const char *api_url, char *temp_file, char *new_url)
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
+            // write calls
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
@@ -117,6 +118,7 @@ int githubAPI(const char *api_url, char *temp_file, char *new_url)
                 }
             }
         }
+        fclose(fp);
     }
     printf("\n\napi get failed...\n\n");
     consoleUpdate(NULL);
@@ -142,9 +144,11 @@ int downloadFile(const char *url, const char *output)
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
+            // write calls
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
+            // progress calls, still slowish
             curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
             curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, download_progress);
 
@@ -166,6 +170,7 @@ int downloadFile(const char *url, const char *output)
                 return 0;
             }
         }
+        fclose(fp);
     }
 
     printf("\n\ndownload failed...\n\n");

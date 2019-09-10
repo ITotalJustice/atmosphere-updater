@@ -8,7 +8,7 @@
 #define WRITEBUFFERSIZE 10000000 // 10MB
 #define MAXFILENAME     256
 
-int unzip(const char *output)
+int unzip(const char *output, int mode)
 {
     unzFile zfile = unzOpen(output);
     unz_global_info gi;
@@ -21,6 +21,18 @@ int unzip(const char *output)
 
         unzOpenCurrentFile(zfile);
         unzGetCurrentFileInfo(zfile, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
+
+        if (mode == 1 && strstr(filename_inzip, ".ini"))
+        {
+            // check if file exists, if not, create one anyway
+            FILE *f = fopen(filename_inzip, "r");
+            if (!f)
+            {
+                fclose(f);
+                goto jump_to_end;
+            }
+            fclose(f);
+        }
 
         // check if the string ends with a /, if so, then its a directory.
         if ((filename_inzip[strlen(filename_inzip) - 1]) == '/')
@@ -50,6 +62,8 @@ int unzip(const char *output)
             fclose(outfile);
             free(buf);
         }
+
+        jump_to_end: // goto
 
         unzCloseCurrentFile(zfile);
         unzGoToNextFile(zfile);
