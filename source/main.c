@@ -6,6 +6,7 @@
 
 #include "includes/download.h"
 #include "includes/unzip.h"
+#include "includes/reboot_payload.h"
 
 #define AMS_URL         "https://api.github.com/repos/Atmosphere-NX/Atmosphere/releases/latest"
 #define APP_URL         "https://github.com/ITotalJustice/atmosphere-updater/releases/latest/download/atmosphere-updater.nro"
@@ -62,8 +63,9 @@ void refreshScreen(int cursor)
 
     printf("Press (+) to exit\n\n\n");
 
-    char *option_list[] = {"= Full Atmosphere Update (recommended)", "= Update Atmosphere, not overwriting \".ini\" files", "= update this app"};
-    for (int i = 0; i < 3; i++)
+    char *option_list[] = {"= Full Atmosphere Update (recommended)", "= Update Atmosphere, not overwriting \".ini\" files", \
+    "= update this app", "= reboot switch (reboot to payload)"};
+    for (int i = 0; i < 4; i++)
     {
         if (cursor != i) printf("[ ] %s\n\n", option_list[i]);
         else printf("[X] %s\n\n", option_list[i]);
@@ -84,7 +86,7 @@ int main(int argc, char **argv)
     if (!dir) mkdir(APP_PATH, 0777);
     closedir(dir);
 
-    short cursor = 0, cursor_max = 2;
+    short cursor = 0, cursor_max = 3;
     refreshScreen(cursor);
 
     // muh loooooop
@@ -144,6 +146,11 @@ int main(int argc, char **argv)
                     }
                     else fclose(f);
                 }
+                break;
+
+            case REBOOT_PAYLOAD:
+                if (!reboot_payload("/atmosphere/reboot_payload.bin"))
+                    printf("Failed to reboot to payload...\n");
                 break;
             }
         }
