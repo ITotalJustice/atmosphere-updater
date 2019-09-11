@@ -27,10 +27,15 @@ int unzip(const char *output, int mode)
         {
             // check if file exists, if not, create one anyway
             FILE *f = fopen(filename_inzip, "r");
-            if (!f)
+            if (f)
             {
-                fclose(f);
-                goto jump_to_end;
+                // check if file size is diff
+                fseek(f, 0L, SEEK_END);
+                if (ftell(f) == file_info.uncompressed_size)
+                {
+                    fclose(f);
+                    goto jump_to_end;
+                }
             }
             fclose(f);
         }
