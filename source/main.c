@@ -8,9 +8,6 @@
 #include "includes/unzip.h"
 #include "includes/reboot_payload.h"
 
-#define AMS_URL         "https://api.github.com/repos/Atmosphere-NX/Atmosphere/releases/latest"
-#define APP_URL         "https://github.com/ITotalJustice/atmosphere-updater/releases/latest/download/atmosphere-updater.nro"
-
 #define ROOT            "/"
 #define APP_PATH        "/switch/atmosphere-updater/"
 #define AMS_OUTPUT      "/switch/atmosphere-updater/ams.zip"
@@ -19,7 +16,9 @@
 #define TEMP_FILE       "/switch/atmosphere-updater/temp"
 #define FILTER_STRING   "browser_download_url\":\""
 
+#define APP_VERSION     "0.3.0"
 #define MAX_STRLEN      512
+#define CURSOR_LIST_MAX 3
 
 int pharseSearch(char *phare_string, char *filter, char* new_string)
 {
@@ -59,13 +58,13 @@ void refreshScreen(int cursor)
 {
     consoleClear();
 
-    printf("Atmosphere-Updater: v%s.\n\n\n", "0.2.1");
+    printf("Atmosphere-Updater: v%s.\n\n\n", APP_VERSION);
 
     printf("Press (+) to exit\n\n\n");
 
     char *option_list[] = {"= Full Atmosphere Update (recommended)", "= Update Atmosphere, not overwriting \".ini\" files", \
     "= update this app", "= reboot switch (reboot to payload)"};
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < (CURSOR_LIST_MAX + 1); i++)
     {
         if (cursor != i) printf("[ ] %s\n\n", option_list[i]);
         else printf("[X] %s\n\n", option_list[i]);
@@ -81,12 +80,15 @@ int main(int argc, char **argv)
     consoleInit(NULL);
     chdir(ROOT);
 
+    //SocketInitConfig socket;
+
     // make paths
     DIR *dir = opendir(APP_PATH);
     if (!dir) mkdir(APP_PATH, 0777);
     closedir(dir);
 
-    short cursor = 0, cursor_max = 3;
+    // set the cursor position to 0
+    short cursor = 0;
     refreshScreen(cursor);
 
     // muh loooooop
@@ -98,7 +100,7 @@ int main(int argc, char **argv)
         // move cursor down...
         if (kDown & KEY_DOWN)
         {
-            if (cursor == cursor_max) cursor = 0;
+            if (cursor == CURSOR_LIST_MAX) cursor = 0;
             else cursor++;
             refreshScreen(cursor);
         }
@@ -106,7 +108,7 @@ int main(int argc, char **argv)
         // move cursor up...
         if (kDown & KEY_UP)
         {
-            if (cursor == 0) cursor = cursor_max;
+            if (cursor == 0) cursor = CURSOR_LIST_MAX;
             else cursor--;
             refreshScreen(cursor);
         }
@@ -155,6 +157,7 @@ int main(int argc, char **argv)
             }
         }
         
+        // exit...
         if (kDown & KEY_PLUS) break;
     }
 

@@ -78,7 +78,7 @@ int unzip(const char *output, int mode)
 
     unzClose(zfile);
     remove(output);
-    printf("\nfinished!\t\tDon't forget to reboot!!!\n");
+    printf("\n\nfinished!\t\tDon't forget to reboot!!!\n");
     consoleUpdate(NULL);
 
     return 0;
