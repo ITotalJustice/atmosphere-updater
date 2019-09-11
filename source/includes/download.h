@@ -1,8 +1,9 @@
 #ifndef _DOWNLOAD_H_
 #define _DOWNLOAD_H_
 
-int githubAPI(const char *api_url, char *temp_file, char *new_url);
+#define ON      1
+#define OFF     2
 
-int downloadFile(const char *url, const char *output);
+int downloadFile(const char *url, const char *output, int api_mode);
 
 #endif

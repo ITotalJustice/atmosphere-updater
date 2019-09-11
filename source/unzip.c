@@ -1,11 +1,12 @@
 #include <stdio.h>
-#include <zlib.h>
 #include <minizip/unzip.h>
 #include <string.h>
 #include <dirent.h>
 #include <switch.h>
 
-#define WRITEBUFFERSIZE 10000000 // 10MB
+#include "includes/unzip.h"
+
+#define WRITEBUFFERSIZE 500000 // 500KB
 #define MAXFILENAME     256
 
 int unzip(const char *output, int mode)
@@ -22,7 +23,7 @@ int unzip(const char *output, int mode)
         unzOpenCurrentFile(zfile);
         unzGetCurrentFileInfo(zfile, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
 
-        if (mode == 1 && strstr(filename_inzip, ".ini"))
+        if (mode == UP_AMS_NCONFIG && strstr(filename_inzip, ".ini"))
         {
             // check if file exists, if not, create one anyway
             FILE *f = fopen(filename_inzip, "r");

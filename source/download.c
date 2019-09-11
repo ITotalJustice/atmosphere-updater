@@ -4,12 +4,12 @@
 #include <time.h>
 #include <math.h>
 #include <curl/curl.h>
-
 #include <switch.h>
+
+#include "includes/download.h"
 
 #define Megabytes_in_Bytes	1048576
 #define API_AGENT           "ITotalJustice"
-#define FILTER_STRING       "browser_download_url\":\""
 
 struct MemoryStruct
 {
@@ -51,81 +51,10 @@ int download_progress(void *p, double dltotal, double dlnow, double ultotal, dou
     {
         consoleUpdate(NULL);
     }
-    fflush(stdout);
 	return 0;
 }
 
-int githubAPI(const char *api_url, char *temp_file, char *new_url)
-{
-    CURL *curl = curl_easy_init();
-    if (curl)
-    {
-        FILE *fp = fopen(temp_file, "wb");
-        if (fp)
-        {
-            struct MemoryStruct chunk;
-            chunk.memory = malloc(1);
-            chunk.size = 0;
-
-            curl_easy_setopt(curl, CURLOPT_URL, api_url);
-            curl_easy_setopt(curl, CURLOPT_USERAGENT, API_AGENT);
-            curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-
-            // write calls
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
-
-            // execute curl, save result
-            CURLcode res = curl_easy_perform(curl);
-
-            // write from mem to file
-            fwrite(chunk.memory, 1, chunk.size, fp);
-
-            //clean
-            curl_easy_cleanup(curl);
-            fclose(fp);
-
-            // slow way of reading throught the file to find a string.
-            // should use a json lib to read through the file much faster.
-            if (res == CURLE_OK)
-            {
-                fp = fopen(temp_file, "r");
-                char c;
-
-                while ((c = fgetc(fp)) != EOF)
-                {
-                    if (c == *FILTER_STRING)
-                    {
-                        for (int i = 0, len = strlen(FILTER_STRING) - 1; c == FILTER_STRING[i]; i++)
-                        {
-                            c = fgetc(fp);
-                            if (i == len)
-                            {
-                                for (int j = 0; c != '\"'; j++)
-                                {
-                                    new_url[j] = c;
-                                    new_url[j+1] = '\0';
-                                    c = fgetc(fp);
-                                }
-                                fclose(fp);
-                                remove(temp_file);
-                                return 0;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        fclose(fp);
-    }
-    printf("\n\napi get failed...\n\n");
-    consoleUpdate(NULL);
-    return 1;
-}
-
-int downloadFile(const char *url, const char *output)
+int downloadFile(const char *url, const char *output, int api_mode)
 {
     CURL *curl = curl_easy_init();
     if (curl)
@@ -137,7 +66,6 @@ int downloadFile(const char *url, const char *output)
             chunk.memory = malloc(1);
             chunk.size = 0;
 
-            printf("\n");
             curl_easy_setopt(curl, CURLOPT_URL, url);
             curl_easy_setopt(curl, CURLOPT_USERAGENT, API_AGENT);
             curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
@@ -149,8 +77,12 @@ int downloadFile(const char *url, const char *output)
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
             // progress calls, still slowish
-            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-            curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, download_progress);
+            if (api_mode == OFF)
+            {
+                printf("\n");
+                curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+                curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, download_progress);
+            }
 
             // execute curl, save result
             CURLcode res = curl_easy_perform(curl);
@@ -165,8 +97,11 @@ int downloadFile(const char *url, const char *output)
 
             if (res == CURLE_OK)
             {
-                printf("\n\ndownload complete!\n\n");
-                consoleUpdate(NULL);
+                if (api_mode == OFF)
+                {
+                    printf("\n\ndownload complete!\n\n");
+                    consoleUpdate(NULL);
+                }
                 return 0;
             }
         }

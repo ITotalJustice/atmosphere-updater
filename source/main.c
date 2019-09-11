@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <switch.h>
@@ -15,17 +16,51 @@
 #define APP_OUTPUT      "/switch/atmosphere-updater/atmosphere-updater.nro"
 #define OLD_APP_PATH    "/switch/atmosphere-updater.nro"
 #define TEMP_FILE       "/switch/atmosphere-updater/temp"
+#define FILTER_STRING   "browser_download_url\":\""
 
-#define UP_AMS          0
-#define UP_AMS_NCONFIG  1
-#define UP_APP          2
 #define MAX_STRLEN      512
+
+int pharseSearch(char *phare_string, char *filter, char* new_string)
+{
+    FILE *fp = fopen(phare_string, "r");
+    
+    if (fp)
+    {
+        char c;
+        while ((c = fgetc(fp)) != EOF)
+        {
+            if (c == *FILTER_STRING)
+            {
+                for (int i = 0, len = strlen(FILTER_STRING) - 1; c == FILTER_STRING[i]; i++)
+                {
+                    c = fgetc(fp);
+                    if (i == len)
+                    {
+                        for (int j = 0; c != '\"'; j++)
+                        {
+                            new_string[j] = c;
+                            new_string[j+1] = '\0';
+                            c = fgetc(fp);
+                        }
+                        fclose(fp);
+                        remove(phare_string);
+                        return 0;
+                    }
+                }
+            }
+        }
+    }
+    fclose(fp);
+    return 1;
+}
 
 void refreshScreen(int cursor)
 {
     consoleClear();
 
-    printf("Atmosphere-Updater: v%.2f.\n\n\n", 0.20);
+    printf("Atmosphere-Updater: v%s.\n\n\n", "0.2.1");
+
+    printf("Press (+) to exit\n\n\n");
 
     char *option_list[] = {"= Full Atmosphere Update (recommended)", "= Update Atmosphere, not overwriting \".ini\" files", "= update this app"};
     for (int i = 0; i < 3; i++)
@@ -45,7 +80,9 @@ int main(int argc, char **argv)
     chdir(ROOT);
 
     // make paths
-    mkdir(APP_PATH, 0777);
+    DIR *dir = opendir(APP_PATH);
+    if (!dir) mkdir(APP_PATH, 0777);
+    closedir(dir);
 
     short cursor = 0, cursor_max = 2;
     refreshScreen(cursor);
@@ -74,23 +111,30 @@ int main(int argc, char **argv)
 
         if (kDown & KEY_A)
         {
-            char new_url[MAX_STRLEN];
             switch (cursor)
             {
             case UP_AMS:
-                if ((githubAPI(AMS_URL, TEMP_FILE, new_url)) == 0)
-                    if (!downloadFile(new_url, AMS_OUTPUT))
-                        unzip(AMS_OUTPUT, 0);
+                if (!downloadFile(AMS_URL, TEMP_FILE, ON))
+                {
+                    char new_url[MAX_STRLEN];
+                    if (!pharseSearch(TEMP_FILE, FILTER_STRING, new_url))
+                        if (!downloadFile(new_url, AMS_OUTPUT, OFF))
+                            unzip(AMS_OUTPUT, UP_AMS_NCONFIG);
+                }
                 break;
 
             case UP_AMS_NCONFIG:
-                if ((githubAPI(AMS_URL, TEMP_FILE, new_url)) == 0)
-                    if (!downloadFile(new_url, AMS_OUTPUT))
+                if (!downloadFile(AMS_URL, TEMP_FILE, ON))
+                {
+                    char new_url[MAX_STRLEN];
+                    if (!pharseSearch(TEMP_FILE, FILTER_STRING, new_url))
+                        if (!downloadFile(new_url, AMS_OUTPUT, OFF))
                         unzip(AMS_OUTPUT, 1);
+                }
                 break;
 
             case UP_APP:
-                if (downloadFile(APP_URL, APP_OUTPUT) == 0)
+                if (!downloadFile(APP_URL, APP_OUTPUT, OFF))
                 {
                     FILE *f = fopen(OLD_APP_PATH, "r");
                     if (f) 
