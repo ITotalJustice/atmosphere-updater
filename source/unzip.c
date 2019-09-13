@@ -4,7 +4,8 @@
 #include <dirent.h>
 #include <switch.h>
 
-#include "includes/unzip.h"
+#include "unzip.h"
+#include "menu.h"
 
 #define WRITEBUFFERSIZE 500000 // 500KB
 #define MAXFILENAME     256
@@ -17,6 +18,9 @@ int unzip(const char *output, int mode)
 
     for (int i = 0; i < gi.number_entry; i++)
     {
+        printOptionList(0);
+        popUpBox(fntSmall, 350, 250, SDL_GetColour(white), "Unziping...");
+
         char filename_inzip[MAXFILENAME];
         unz_file_info file_info;
 
@@ -48,7 +52,7 @@ int unzip(const char *output, int mode)
             if (dir) closedir(dir);
             else
             {
-                printf("creating directory: %s\n", filename_inzip);
+                drawText(fntSmall, 350, 350, SDL_GetColour(white), filename_inzip);
                 mkdir(filename_inzip, 0777);
             }
         }
@@ -59,8 +63,7 @@ int unzip(const char *output, int mode)
             FILE *outfile = fopen(write_filename, "wb");
             void *buf = malloc(WRITEBUFFERSIZE);
 
-            printf("writing file: %s\n", write_filename);
-            consoleUpdate(NULL);
+            drawText(fntSmall, 350, 350, SDL_GetColour(white), write_filename);
 
             for (int j = unzReadCurrentFile(zfile, buf, WRITEBUFFERSIZE); j > 0; j = unzReadCurrentFile(zfile, buf, WRITEBUFFERSIZE))
                 fwrite(buf, 1, j, outfile);
@@ -69,17 +72,15 @@ int unzip(const char *output, int mode)
             free(buf);
         }
 
-        jump_to_end: // goto
+        updateRenderer();
 
+        jump_to_end: // goto
         unzCloseCurrentFile(zfile);
         unzGoToNextFile(zfile);
-        consoleUpdate(NULL);
     }
 
     unzClose(zfile);
     remove(output);
-    printf("\n\nfinished!\t\tDon't forget to reboot!!!\n");
-    consoleUpdate(NULL);
 
     return 0;
 }

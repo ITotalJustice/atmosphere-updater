@@ -1,15 +1,17 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <time.h>
 #include <math.h>
 #include <curl/curl.h>
 #include <switch.h>
 
-#include "includes/download.h"
+#include "download.h"
+#include "menu.h"
+#include "sdl.h"
 
-#define Megabytes_in_Bytes	1048576
 #define API_AGENT           "ITotalJustice"
+#define DOWNLOAD_BAR_MAX    500
 
 struct MemoryStruct
 {
@@ -23,11 +25,7 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
   struct MemoryStruct *mem = (struct MemoryStruct *)userdata;
 
   char *ptr = realloc(mem->memory, mem->size + realsize + 1);
-  if (ptr == NULL) 
-  {
-    printf("not enough memory (realloc returned NULL)\n");
-    return 0;
-  }
+  if (ptr == NULL) return 0;
  
   mem->memory = ptr;
   memcpy(&(mem->memory[mem->size]), contents, realsize);
@@ -41,15 +39,18 @@ int download_progress(void *p, double dltotal, double dlnow, double ultotal, dou
 {
     if (dltotal <= 0.0) return 0;
 
-    printf("* DOWNLOADING: %.2fMB of %.2fMB *\r", dlnow / Megabytes_in_Bytes, dltotal / Megabytes_in_Bytes);
-
     struct timeval tv;
     gettimeofday(&tv, NULL);
     int counter = round(tv.tv_usec / 100000);
 
     if (counter == 0 || counter == 2 || counter == 4 || counter == 6 || counter == 8)
     {
-        consoleUpdate(NULL);
+        printOptionList(0);
+        popUpBox(fntSmall, 350, 250, SDL_GetColour(white), "Downloading...");
+        drawShape(SDL_GetColour(pink), 380, 380, DOWNLOAD_BAR_MAX, 30);
+        drawShape(SDL_GetColour(blue), 380, 380, round((dlnow / dltotal) * DOWNLOAD_BAR_MAX), 30);
+
+        updateRenderer();
     }
 	return 0;
 }
@@ -95,20 +96,16 @@ int downloadFile(const char *url, const char *output, int api_mode)
             free(chunk.memory);
             fclose(fp);
 
-            if (res == CURLE_OK)
-            {
-                if (api_mode == OFF)
-                {
-                    printf("\n\ndownload complete!\n\n");
-                    consoleUpdate(NULL);
-                }
-                return 0;
-            }
+            if (res == CURLE_OK) return 0;
         }
         fclose(fp);
     }
 
-    printf("\n\ndownload failed...\n\n");
-    consoleUpdate(NULL);
+    drawShape(SDL_GetColour(dark_grey), (SCREEN_W/4), (SCREEN_H/4), (SCREEN_W/2), (SCREEN_H/2));
+    drawImageScale(app_icon, 570, 340, 128, 128);
+    drawText(fntMedium, 350, 250, SDL_GetColour(white), "Download Failed...");
+    updateRenderer();
+
+    sleep(3);
     return 1;
 }

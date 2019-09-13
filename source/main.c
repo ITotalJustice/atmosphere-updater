@@ -2,11 +2,15 @@
 #include <string.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <stdbool.h>
 #include <switch.h>
 
-#include "includes/download.h"
-#include "includes/unzip.h"
-#include "includes/reboot_payload.h"
+#include "download.h"
+#include "unzip.h"
+#include "menu.h"
+#include "reboot_payload.h"
+
+//#define DEBUG           // enable for nxlink debug
 
 #define ROOT            "/"
 #define APP_PATH        "/switch/atmosphere-updater/"
@@ -16,9 +20,25 @@
 #define TEMP_FILE       "/switch/atmosphere-updater/temp"
 #define FILTER_STRING   "browser_download_url\":\""
 
-#define APP_VERSION     "0.3.0"
-#define MAX_STRLEN      512
-#define CURSOR_LIST_MAX 3
+int appInit()
+{
+    socketInitializeDefault();
+    #ifdef DEBUG
+    nxlinkStdio();
+    #endif
+    plInitialize();
+    romfsInit();
+    sdlInit();
+    return 0;
+}
+
+void appExit()
+{
+    sdlExit();
+    romfsExit();
+    socketExit();
+    plExit();
+}
 
 int pharseSearch(char *phare_string, char *filter, char* new_string)
 {
@@ -54,33 +74,11 @@ int pharseSearch(char *phare_string, char *filter, char* new_string)
     return 1;
 }
 
-void refreshScreen(int cursor)
-{
-    consoleClear();
-
-    printf("Atmosphere-Updater: v%s.\n\n\n", APP_VERSION);
-
-    printf("Press (+) to exit\n\n\n");
-
-    char *option_list[] = {"= Full Atmosphere Update (recommended)", "= Update Atmosphere, not overwriting \".ini\" files", \
-    "= update this app", "= reboot switch (reboot to payload)"};
-    for (int i = 0; i < (CURSOR_LIST_MAX + 1); i++)
-    {
-        if (cursor != i) printf("[ ] %s\n\n", option_list[i]);
-        else printf("[X] %s\n\n", option_list[i]);
-    }
-
-    consoleUpdate(NULL);
-}
-
 int main(int argc, char **argv)
 {
     // init stuff
-    socketInitializeDefault();
-    consoleInit(NULL);
+    appInit();
     chdir(ROOT);
-
-    //SocketInitConfig socket;
 
     // make paths
     DIR *dir = opendir(APP_PATH);
@@ -88,8 +86,11 @@ int main(int argc, char **argv)
     closedir(dir);
 
     // set the cursor position to 0
-    short cursor = 0;
-    refreshScreen(cursor);
+    short cursor        = 0;
+
+    //bool updated_ams    = OFF;
+    bool app_update     = OFF;
+    bool old_path       = OFF;
 
     // muh loooooop
     while(appletMainLoop())
@@ -97,12 +98,13 @@ int main(int argc, char **argv)
         hidScanInput();
         u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
 
+        printOptionList(cursor);
+
         // move cursor down...
         if (kDown & KEY_DOWN)
         {
             if (cursor == CURSOR_LIST_MAX) cursor = 0;
             else cursor++;
-            refreshScreen(cursor);
         }
 
         // move cursor up...
@@ -110,7 +112,6 @@ int main(int argc, char **argv)
         {
             if (cursor == 0) cursor = CURSOR_LIST_MAX;
             else cursor--;
-            refreshScreen(cursor);
         }
 
         if (kDown & KEY_A)
@@ -138,31 +139,64 @@ int main(int argc, char **argv)
                 break;
 
             case UP_APP:
-                if (!downloadFile(APP_URL, APP_OUTPUT, OFF))
+                if (!downloadFile(APP_URL, TEMP_FILE, OFF))
                 {
-                    FILE *f = fopen(OLD_APP_PATH, "r");
-                    if (f) 
+                    FILE *f1 = fopen(APP_OUTPUT, "r");
+                    FILE *f2 = fopen(OLD_APP_PATH, "r");
+                    if (f1) 
                     {
-                        fclose(f);
-                        remove(OLD_APP_PATH);
+                        app_update = ON;
+                        fclose(f1);
                     }
-                    else fclose(f);
+                    if (f2)
+                    {
+                        app_update = ON;
+                        old_path = ON;
+                        fclose(f2);
+                    }
+                    drawShape(SDL_GetColour(dark_grey), (SCREEN_W/4), (SCREEN_H/4), (SCREEN_W/2), (SCREEN_H/2));
+                    drawImageScale(app_icon, 570, 340, 128, 128);
+                    drawText(fntMedium, 350, 250, SDL_GetColour(white), "Update complete! Closing app...");
+                    updateRenderer();
+
+                    sleep(3);
+                    goto jump_exit;
                 }
                 break;
 
             case REBOOT_PAYLOAD:
                 if (!reboot_payload("/atmosphere/reboot_payload.bin"))
-                    printf("Failed to reboot to payload...\n");
+                {
+                    drawShape(SDL_GetColour(dark_grey), (SCREEN_W/4), (SCREEN_H/4), (SCREEN_W/2), (SCREEN_H/2));
+                    drawImageScale(reboot_icon, 570, 340, 128, 128);
+                    drawText(fntMedium, 350, 250, SDL_GetColour(white), "Failed to reboot to payload...");
+                    updateRenderer();
+
+                    sleep(3);
+                }
                 break;
             }
         }
         
         // exit...
         if (kDown & KEY_PLUS) break;
+
+        // display render buffer
+        updateRenderer();
     }
 
+    jump_exit: //goto
+
     // cleanup then exit
-    socketExit();
-    consoleExit(NULL);
+    appExit();
+
+    // runs if the app was updated
+    if (app_update)
+    {
+        if (old_path) remove(OLD_APP_PATH);
+        else remove(APP_OUTPUT);
+        rename(TEMP_FILE, APP_OUTPUT);
+    }
+
     return 0;
 }

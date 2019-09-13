@@ -45,8 +45,8 @@ TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data
-INCLUDES	:=	include
-#ROMFS	:=	romfs
+INCLUDES	:=	includes
+ROMFS		:=	romfs
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -56,14 +56,15 @@ ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 CFLAGS	:=	-g -Wall -O3 -ffunction-sections \
 			$(ARCH) $(DEFINES)
 
-CFLAGS	+=	$(INCLUDE) -D__SWITCH__
+CFLAGS	+=	$(INCLUDE) -D__SWITCH__ `freetype-config --cflags` `sdl2-config --cflags`
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:=  -lcurl -lmbedtls -lmbedx509 -lmbedcrypto -lminizip -lz -lnx
+LIBS	:=  -lSDL2_ttf -lSDL2_image -lwebp -lpng -lturbojpeg -lSDL2 -lSDL2_gfx `sdl2-config --libs` `freetype-config --libs` \
+			-lcurl -lmbedtls -lmbedx509 -lmbedcrypto -lminizip -lz -lnx
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -97,7 +98,7 @@ BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 #---------------------------------------------------------------------------------
 ifeq ($(strip $(CPPFILES)),)
 #---------------------------------------------------------------------------------
-	export LD	:=	$(CC)
+	export LD	:=	$(CXX)
 #---------------------------------------------------------------------------------
 else
 #---------------------------------------------------------------------------------

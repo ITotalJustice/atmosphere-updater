@@ -1,5 +1,6 @@
-/build*
+/old_romfs*
 /.vscode*
+/build*
 *.elf
 *.nacp
 *.nro
