@@ -42,7 +42,7 @@ Reboot (reboot to payload):
 
 # Special Thanks!
 
-Thanks you to @sudot0ph for the design of the app icon, as well as the icons used with the app!
+Thanks you to [toph](https://github.com/sudot0ph) for the design of the app icon, as well as the icons used with the app!
 
 ----
 
