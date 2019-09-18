@@ -27,6 +27,7 @@ int appInit()
     #ifdef DEBUG
     nxlinkStdio();
     #endif
+    plInitialize();
     romfsInit();
     sdlInit();
     romfsExit(); // exit romfs after loading sdl as we no longer need it.
@@ -37,6 +38,7 @@ void appExit()
 {
     sdlExit();
     socketExit();
+    plExit();
 }
 
 int pharseSearch(char *phare_string, char *filter, char* new_string)
@@ -83,6 +85,15 @@ void update_AMS_Hekate(char *url, char *output, int mode)
         if (!pharseSearch(TEMP_FILE, FILTER_STRING, new_url))
             if (!downloadFile(new_url, output, OFF))
                 unzip(output, mode);
+    }
+}
+
+void update_app()
+{
+    if (!downloadFile(APP_URL, APP_OUTPUT, OFF))
+    {
+        remove(OLD_APP_PATH);
+        errorBox("Update complete! Restart app to take effect", app_icon);
     }
 }
 
@@ -143,8 +154,7 @@ int main(int argc, char **argv)
                 break;
 
             case UP_APP:
-                if (!downloadFile(APP_URL, APP_OUTPUT, OFF))
-                    remove(OLD_APP_PATH);
+                update_app();
                 break;
 
             case REBOOT_PAYLOAD:
