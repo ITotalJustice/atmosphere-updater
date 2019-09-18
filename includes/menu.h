@@ -15,5 +15,6 @@ void printOptionList(int cursor);
 void moreOptionsMenu(int url_location, int menu_tab);
 void helpScreen(int url_location, int menu_tab);
 void popUpBox(TTF_Font *font, int x, int y, SDL_Colour colour, char *text);
+void errorBox(char *errorText, SDL_Texture *icon);
 
 #endif

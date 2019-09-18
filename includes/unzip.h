@@ -2,7 +2,7 @@
 #define _UNZIP_H_
 
 #define UP_AMS          0
-#define UP_AMS_NCONFIG  1
+#define UP_AMS_NOINI    1
 #define UP_HEKATE       2
 #define UP_APP          3
 #define REBOOT_PAYLOAD  4

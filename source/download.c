@@ -8,7 +8,6 @@
 
 #include "download.h"
 #include "menu.h"
-#include "sdl.h"
 
 #define API_AGENT           "ITotalJustice"
 #define DOWNLOAD_BAR_MAX    500
@@ -101,11 +100,6 @@ int downloadFile(const char *url, const char *output, int api_mode)
         fclose(fp);
     }
 
-    drawShape(SDL_GetColour(dark_grey), (SCREEN_W/4), (SCREEN_H/4), (SCREEN_W/2), (SCREEN_H/2));
-    drawImageScale(app_icon, 570, 340, 128, 128);
-    drawText(fntMedium, 350, 250, SDL_GetColour(white), "Download Failed...");
-    updateRenderer();
-
-    sleep(3);
+    errorBox("Download failed...", app_icon);
     return 1;
 }

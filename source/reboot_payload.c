@@ -2,6 +2,8 @@
 #include <string.h>
 #include <switch.h>
 
+#include "menu.h"
+
 // AMS CODE START
 #define IRAM_PAYLOAD_MAX_SIZE 0x2F000
 #define IRAM_PAYLOAD_BASE 0x40010000
@@ -68,10 +70,11 @@ int reboot_payload(const char *payload)
             fclose(fp);
             reboot_to_payload();
         }
-        printf("Failed to open %s\n", payload);
+        errorBox("Failed to open payload...", reboot_icon);
         splExit();
         return 1;
     }
-    printf("Failed to init spl!\n");
+    
+    errorBox("Failed to init spl for reboot...", reboot_icon);
     return 1;
 }

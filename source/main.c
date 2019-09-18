@@ -27,18 +27,16 @@ int appInit()
     #ifdef DEBUG
     nxlinkStdio();
     #endif
-    plInitialize();
     romfsInit();
     sdlInit();
+    romfsExit(); // exit romfs after loading sdl as we no longer need it.
     return 0;
 }
 
 void appExit()
 {
     sdlExit();
-    romfsExit();
     socketExit();
-    plExit();
 }
 
 int pharseSearch(char *phare_string, char *filter, char* new_string)
@@ -71,8 +69,21 @@ int pharseSearch(char *phare_string, char *filter, char* new_string)
             }
         }
     }
+
+    errorBox("Failed to find parse url!", app_icon);
     fclose(fp);
     return 1;
+}
+
+void update_AMS_Hekate(char *url, char *output, int mode)
+{
+    if (!downloadFile(url, TEMP_FILE, ON))
+    {
+        char new_url[MAX_STRLEN];
+        if (!pharseSearch(TEMP_FILE, FILTER_STRING, new_url))
+            if (!downloadFile(new_url, output, OFF))
+                unzip(output, mode);
+    }
 }
 
 int main(int argc, char **argv)
@@ -85,12 +96,8 @@ int main(int argc, char **argv)
     // set the cursor position to 0
     short cursor        = 0;
 
-    // bools
-    bool app_update     = OFF;
-    bool old_path       = OFF;
-
     // TODO: touch
-    
+
     /*u32 tch = 0;
     touchPosition touch;
     hidTouchRead(&touch, tch);
@@ -118,76 +125,30 @@ int main(int argc, char **argv)
             else cursor--;
         }
 
+        // select option
         if (kDown & KEY_A)
         {
             switch (cursor)
             {
             case UP_AMS:
-                if (!downloadFile(AMS_URL, TEMP_FILE, ON))
-                {
-                    char new_url[MAX_STRLEN];
-                    if (!pharseSearch(TEMP_FILE, FILTER_STRING, new_url))
-                        if (!downloadFile(new_url, AMS_OUTPUT, OFF))
-                            unzip(AMS_OUTPUT, UP_AMS);
-                }
+                update_AMS_Hekate(AMS_URL, AMS_OUTPUT, cursor);
                 break;
 
-            case UP_AMS_NCONFIG:
-                if (!downloadFile(AMS_URL, TEMP_FILE, ON))
-                {
-                    char new_url[MAX_STRLEN];
-                    if (!pharseSearch(TEMP_FILE, FILTER_STRING, new_url))
-                        if (!downloadFile(new_url, AMS_OUTPUT, OFF))
-                        unzip(AMS_OUTPUT, UP_AMS_NCONFIG);
-                }
+            case UP_AMS_NOINI:
+                update_AMS_Hekate(AMS_URL, AMS_OUTPUT, cursor);
                 break;
 
             case UP_HEKATE:
-                if (!downloadFile(HEKATE_URL, TEMP_FILE, ON))
-                {
-                    char new_url[MAX_STRLEN];
-                    if (!pharseSearch(TEMP_FILE, FILTER_STRING, new_url))
-                        if (!downloadFile(new_url, HEKATE_OUTPUT, OFF))
-                            unzip(HEKATE_OUTPUT, UP_HEKATE);
-                }
+                update_AMS_Hekate(HEKATE_URL, HEKATE_OUTPUT, cursor);
                 break;
 
             case UP_APP:
-                if (!downloadFile(APP_URL, TEMP_FILE, OFF))
-                {
-                    FILE *f1 = fopen(APP_OUTPUT, "r");
-                    FILE *f2 = fopen(OLD_APP_PATH, "r");
-                    if (f1) 
-                    {
-                        app_update = ON;
-                        fclose(f1);
-                    }
-                    if (f2)
-                    {
-                        app_update = ON;
-                        old_path = ON;
-                        fclose(f2);
-                    }
-                    drawShape(SDL_GetColour(dark_grey), (SCREEN_W/4), (SCREEN_H/4), (SCREEN_W/2), (SCREEN_H/2));
-                    drawImageScale(app_icon, 570, 340, 128, 128);
-                    drawText(fntMedium, 350, 250, SDL_GetColour(white), "Update complete! Closing app...");
-                    updateRenderer();
-
-                    sleep(3);
-                    goto jump_exit;
-                }
+                if (!downloadFile(APP_URL, APP_OUTPUT, OFF))
+                    remove(OLD_APP_PATH);
                 break;
 
             case REBOOT_PAYLOAD:
-                if (!reboot_payload("/atmosphere/reboot_payload.bin"))
-                {
-                    drawShape(SDL_GetColour(dark_grey), (SCREEN_W/4), (SCREEN_H/4), (SCREEN_W/2), (SCREEN_H/2));
-                    drawImageScale(reboot_icon, 570, 340, 128, 128);
-                    drawText(fntMedium, 350, 250, SDL_GetColour(white), "Failed to reboot to payload...");
-                    updateRenderer();
-
-                    sleep(3);
-                }
+                reboot_payload("/atmosphere/reboot_payload.bin");
                 break;
             }
         }
@@ -199,18 +160,8 @@ int main(int argc, char **argv)
         updateRenderer();
     }
 
-    jump_exit: //goto
-
     // cleanup then exit
     appExit();
-
-    // runs if the app was updated
-    if (app_update)
-    {
-        if (old_path) remove(OLD_APP_PATH);
-        else remove(APP_OUTPUT);
-        rename(TEMP_FILE, APP_OUTPUT);
-    }
 
     return 0;
 }

@@ -27,19 +27,14 @@ int unzip(const char *output, int mode)
         unzOpenCurrentFile(zfile);
         unzGetCurrentFileInfo(zfile, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
 
-        if (mode == UP_AMS_NCONFIG && strstr(filename_inzip, ".ini"))
+        if (mode == UP_AMS_NOINI && strstr(filename_inzip, ".ini"))
         {
             // check if file exists, if not, create one anyway
             FILE *f = fopen(filename_inzip, "r");
             if (f)
             {
-                // check if file size is diff
-                fseek(f, 0L, SEEK_END);
-                if (ftell(f) == file_info.uncompressed_size)
-                {
-                    fclose(f);
-                    goto jump_to_end;
-                }
+                fclose(f);
+                goto jump_to_end;
             }
             fclose(f);
         }
@@ -60,10 +55,14 @@ int unzip(const char *output, int mode)
         else
         {
             const char *write_filename = filename_inzip;
-            FILE *outfile = fopen(write_filename, "wb");
             void *buf = malloc(WRITEBUFFERSIZE);
 
+            FILE *outfile;
+            if (mode == UP_HEKATE && strstr(filename_inzip, ".bin")) outfile = fopen("/atmosphere/reboot_payload.bin", "wb");
+            else outfile = fopen(write_filename, "wb");
+
             drawText(fntSmall, 350, 350, SDL_GetColour(white), write_filename);
+            printf("writing file %s\n", write_filename);
 
             for (int j = unzReadCurrentFile(zfile, buf, WRITEBUFFERSIZE); j > 0; j = unzReadCurrentFile(zfile, buf, WRITEBUFFERSIZE))
                 fwrite(buf, 1, j, outfile);
