@@ -15,7 +15,7 @@ static SDL_Renderer *main_renderer;
 SDL_Colour colours[] = {
     { 255, 255, 255 },          //white
     { 140, 140, 140, 255 },     //grey
-    { 0, 0, 0 },                //black
+    { 0, 0, 0, 255 },                //black
     { 255, 192, 203 },          //pink
     { 255, 165, 0 },            //orange
     { 255, 255, 0 },            //yellow
@@ -24,10 +24,11 @@ SDL_Colour colours[] = {
     { 0, 128, 0 },              //green
     { 0, 191, 255 },            //light blue
     { 0, 0, 255 },              //blue
-    { 0, 0, 139 },              //dark blue
+    { 28, 33, 73 },             //dark blue
     { 160, 32, 240 },           //purple
     { 81, 81, 81 },             //dark grey
-    { 131, 177, 218 }           //jordy blue
+    { 131, 177, 218 },          //jordy blue
+    { 97, 115, 255 }            //faint blue
     };
 
 SDL_Colour SDL_GetColour(int colour_option)
@@ -114,10 +115,11 @@ void loadFonts()
 void loadTextures()
 {
     imageLoad(&background,      "romfs:/ams_background.png");
-    imageLoad(&app_icon,        "romfs:/app_icon.jpg");
+    imageLoad(&app_icon,        "romfs:/app_icon.png");
     imageLoad(&ams_icon,        "romfs:/ams_icon.png");
-    imageLoad(&ams_plus_icon,   "romfs:/ams_plus_icon.jpg");
+    imageLoad(&ams_plus_icon,   "romfs:/ams_plus_icon.png");
     imageLoad(&reboot_icon,     "romfs:/reboot_icon.png");
+    imageLoad(&hekate_icon,     "romfs:/hekate_icon.png");
 }
 
 void destroyTextures()
@@ -130,6 +132,7 @@ void destroyTextures()
     SDL_DestroyTexture(ams_icon);
     SDL_DestroyTexture(ams_plus_icon);
     SDL_DestroyTexture(reboot_icon);
+    SDL_DestroyTexture(hekate_icon);
 }
 
 void sdlInit()
@@ -140,6 +143,8 @@ void sdlInit()
 
     main_window = SDL_CreateWindow("totaljustice", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_W, SCREEN_H, SDL_WINDOW_SHOWN);
     main_renderer = SDL_CreateRenderer(main_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+    //SDL_SetRenderDrawBlendMode(main_renderer, SDL_BLENDMODE_MOD);
     
     // highest quality
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");

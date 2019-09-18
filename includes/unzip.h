@@ -3,8 +3,9 @@
 
 #define UP_AMS          0
 #define UP_AMS_NCONFIG  1
-#define UP_APP          2
-#define REBOOT_PAYLOAD  3
+#define UP_HEKATE       2
+#define UP_APP          3
+#define REBOOT_PAYLOAD  4
 
 int unzip(const char *output, int mode);
 

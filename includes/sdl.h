@@ -27,10 +27,11 @@
 #define purple      12
 #define dark_grey   13
 #define jordy_blue  14
+#define faint_blue  15
 
 
 TTF_Font *fntSmall, *fntMedium, *fntLarge;
-SDL_Texture *background, *app_icon, *ams_icon, *ams_plus_icon, *reboot_icon;
+SDL_Texture *background, *app_icon, *ams_icon, *ams_plus_icon, *reboot_icon, *hekate_icon;
 
 
 SDL_Colour SDL_GetColour(int colour_option);                                        //pass the name of colour, returns the colour

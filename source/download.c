@@ -47,8 +47,8 @@ int download_progress(void *p, double dltotal, double dlnow, double ultotal, dou
     {
         printOptionList(0);
         popUpBox(fntSmall, 350, 250, SDL_GetColour(white), "Downloading...");
-        drawShape(SDL_GetColour(pink), 380, 380, DOWNLOAD_BAR_MAX, 30);
-        drawShape(SDL_GetColour(blue), 380, 380, round((dlnow / dltotal) * DOWNLOAD_BAR_MAX), 30);
+        drawShape(SDL_GetColour(white), 380, 380, DOWNLOAD_BAR_MAX, 30);
+        drawShape(SDL_GetColour(faint_blue), 380, 380, round((dlnow / dltotal) * DOWNLOAD_BAR_MAX), 30);
 
         updateRenderer();
     }

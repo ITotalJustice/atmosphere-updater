@@ -3,12 +3,11 @@
 
 #include "sdl.h"
 
-#define APP_VERSION         "0.3.0"
 #define ON                  1
 #define OFF                 0
-#define CURSOR_LIST_MAX     3
+#define CURSOR_LIST_MAX     4
 #define small_newline       75
-#define newline             125
+#define newline             110
 #define MAX_STRLEN          512
 
 void refreshScreen(void);

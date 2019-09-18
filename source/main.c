@@ -1,8 +1,8 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
 #include <dirent.h>
-#include <stdbool.h>
 #include <switch.h>
 
 #include "download.h"
@@ -15,6 +15,7 @@
 #define ROOT            "/"
 #define APP_PATH        "/switch/atmosphere-updater/"
 #define AMS_OUTPUT      "/switch/atmosphere-updater/ams.zip"
+#define HEKATE_OUTPUT   "/switch/atmosphere-updater/hekate.zip"
 #define APP_OUTPUT      "/switch/atmosphere-updater/atmosphere-updater.nro"
 #define OLD_APP_PATH    "/switch/atmosphere-updater.nro"
 #define TEMP_FILE       "/switch/atmosphere-updater/temp"
@@ -78,20 +79,23 @@ int main(int argc, char **argv)
 {
     // init stuff
     appInit();
+    mkdir(APP_PATH, 0777);
     chdir(ROOT);
-
-    // make paths
-    DIR *dir = opendir(APP_PATH);
-    if (!dir) mkdir(APP_PATH, 0777);
-    closedir(dir);
 
     // set the cursor position to 0
     short cursor        = 0;
 
-    //bool updated_ams    = OFF;
+    // bools
     bool app_update     = OFF;
     bool old_path       = OFF;
 
+    // TODO: touch
+    
+    /*u32 tch = 0;
+    touchPosition touch;
+    hidTouchRead(&touch, tch);
+    if (KEY_TOUCH && touch.px > 530 && touch.px < 1200 && touch.py > 130-20 && touch.py < 130-20+70)*/
+    
     // muh loooooop
     while(appletMainLoop())
     {
@@ -124,7 +128,7 @@ int main(int argc, char **argv)
                     char new_url[MAX_STRLEN];
                     if (!pharseSearch(TEMP_FILE, FILTER_STRING, new_url))
                         if (!downloadFile(new_url, AMS_OUTPUT, OFF))
-                            unzip(AMS_OUTPUT, UP_AMS_NCONFIG);
+                            unzip(AMS_OUTPUT, UP_AMS);
                 }
                 break;
 
@@ -134,7 +138,17 @@ int main(int argc, char **argv)
                     char new_url[MAX_STRLEN];
                     if (!pharseSearch(TEMP_FILE, FILTER_STRING, new_url))
                         if (!downloadFile(new_url, AMS_OUTPUT, OFF))
-                        unzip(AMS_OUTPUT, 1);
+                        unzip(AMS_OUTPUT, UP_AMS_NCONFIG);
+                }
+                break;
+
+            case UP_HEKATE:
+                if (!downloadFile(HEKATE_URL, TEMP_FILE, ON))
+                {
+                    char new_url[MAX_STRLEN];
+                    if (!pharseSearch(TEMP_FILE, FILTER_STRING, new_url))
+                        if (!downloadFile(new_url, HEKATE_OUTPUT, OFF))
+                            unzip(HEKATE_OUTPUT, UP_HEKATE);
                 }
                 break;
 
