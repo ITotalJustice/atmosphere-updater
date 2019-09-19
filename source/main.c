@@ -23,14 +23,14 @@
 
 int appInit()
 {
-    socketInitializeDefault();
+    socketInitializeDefault();  // for curl / nxlink
     #ifdef DEBUG
     nxlinkStdio();
     #endif
-    plInitialize();
+    plInitialize();             // for shared fonts
     romfsInit();
     sdlInit();
-    romfsExit(); // exit romfs after loading sdl as we no longer need it.
+    romfsExit();                // exit romfs after loading sdl as we no longer need it.
     return 0;
 }
 
@@ -77,8 +77,34 @@ int pharseSearch(char *phare_string, char *filter, char* new_string)
     return 1;
 }
 
-void update_AMS_Hekate(char *url, char *output, int mode)
+void update_ams_hekate(char *url, char *output, int mode)
 {
+    if (mode == UP_HEKATE)
+    {
+        printOptionList(mode);
+        popUpBox(fntMedium, 390, 250, SDL_GetColour(white), "Update AMS and hekate?");
+        // highlight box
+        drawShape(SDL_GetColour(faint_blue), (700), (410), (200), (65));
+        drawShape(SDL_GetColour(faint_blue), (370), (410), (175), (65));
+        // option text
+        drawText(fntMedium, 390, 425, SDL_GetColour(white), "(B) No");
+        drawText(fntMedium, 725, 425, SDL_GetColour(white), "(A) Yes");
+        updateRenderer();
+
+        while (1)
+        {
+            hidScanInput();
+            u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
+
+            if (kDown & KEY_A)
+            {
+                update_ams_hekate(AMS_URL, AMS_OUTPUT, UP_AMS);
+                break;
+            }
+            if (kDown & KEY_B) break;
+        }
+    }
+
     if (!downloadFile(url, TEMP_FILE, ON))
     {
         char new_url[MAX_STRLEN];
@@ -105,7 +131,7 @@ int main(int argc, char **argv)
     chdir(ROOT);
 
     // set the cursor position to 0
-    short cursor        = 0;
+    short cursor = 0;
 
     // TODO: touch
 
@@ -142,15 +168,15 @@ int main(int argc, char **argv)
             switch (cursor)
             {
             case UP_AMS:
-                update_AMS_Hekate(AMS_URL, AMS_OUTPUT, cursor);
+                update_ams_hekate(AMS_URL, AMS_OUTPUT, cursor);
                 break;
 
             case UP_AMS_NOINI:
-                update_AMS_Hekate(AMS_URL, AMS_OUTPUT, cursor);
+                update_ams_hekate(AMS_URL, AMS_OUTPUT, cursor);
                 break;
 
             case UP_HEKATE:
-                update_AMS_Hekate(HEKATE_URL, HEKATE_OUTPUT, cursor);
+                update_ams_hekate(HEKATE_URL, HEKATE_OUTPUT, cursor);
                 break;
 
             case UP_APP:

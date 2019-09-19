@@ -28,7 +28,7 @@ void printOptionList(int cursor)
 
     char *description_list[] = {    "Updates everything for Atmosphere", \
                                     "Updates ignoring .ini files (if they exist)", \
-                                    "Updates hekate, reboot payload is replaced with hekate", \
+                                    "Updates hekate with option to also update Atmosphere", \
                                     "Updates app and removes old version", \
                                     "Reboots switch (recommended after updating)" };
 
