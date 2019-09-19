@@ -2,7 +2,7 @@
 
 Update Atmosphere cfw from within your switch!
 
-![Img](example.jpg)
+![Img](images/example.jpg)
 
 ----
 
