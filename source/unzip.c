@@ -18,7 +18,7 @@ int unzip(const char *output, int mode)
 
     for (int i = 0; i < gi.number_entry; i++)
     {
-        printOptionList(0);
+        printOptionList(mode);
         popUpBox(fntSmall, 350, 250, SDL_GetColour(white), "Unziping...");
 
         char filename_inzip[MAXFILENAME];
@@ -62,7 +62,6 @@ int unzip(const char *output, int mode)
             else outfile = fopen(write_filename, "wb");
 
             drawText(fntSmall, 350, 350, SDL_GetColour(white), write_filename);
-            printf("writing file %s\n", write_filename);
 
             for (int j = unzReadCurrentFile(zfile, buf, WRITEBUFFERSIZE); j > 0; j = unzReadCurrentFile(zfile, buf, WRITEBUFFERSIZE))
                 fwrite(buf, 1, j, outfile);
@@ -80,6 +79,5 @@ int unzip(const char *output, int mode)
 
     unzClose(zfile);
     remove(output);
-
     return 0;
 }

@@ -10,16 +10,16 @@
 #include "menu.h"
 #include "reboot_payload.h"
 
-//#define DEBUG           // enable for nxlink debug
+//#define DEBUG                 // enable for nxlink debug
 
-#define ROOT            "/"
-#define APP_PATH        "/switch/atmosphere-updater/"
-#define AMS_OUTPUT      "/switch/atmosphere-updater/ams.zip"
-#define HEKATE_OUTPUT   "/switch/atmosphere-updater/hekate.zip"
-#define APP_OUTPUT      "/switch/atmosphere-updater/atmosphere-updater.nro"
-#define OLD_APP_PATH    "/switch/atmosphere-updater.nro"
-#define TEMP_FILE       "/switch/atmosphere-updater/temp"
-#define FILTER_STRING   "browser_download_url\":\""
+#define ROOT                    "/"
+#define APP_PATH                "/switch/atmosphere-updater/"
+#define AMS_OUTPUT              "/switch/atmosphere-updater/ams.zip"
+#define HEKATE_OUTPUT           "/switch/atmosphere-updater/hekate.zip"
+#define APP_OUTPUT              "/switch/atmosphere-updater/atmosphere-updater.nro"
+#define OLD_APP_PATH            "/switch/atmosphere-updater.nro"
+#define TEMP_FILE               "/switch/atmosphere-updater/temp"
+#define FILTER_STRING           "browser_download_url\":\""
 
 int appInit()
 {
@@ -41,7 +41,7 @@ void appExit()
     plExit();
 }
 
-int pharseSearch(char *phare_string, char *filter, char* new_string)
+int parseSearch(char *phare_string, char *filter, char* new_string)
 {
     FILE *fp = fopen(phare_string, "r");
     
@@ -81,34 +81,35 @@ void update_ams_hekate(char *url, char *output, int mode)
 {
     if (mode == UP_HEKATE)
     {
+        // ask if user wants to install atmosphere as well.
+        
         printOptionList(mode);
         popUpBox(fntMedium, 390, 250, SDL_GetColour(white), "Update AMS and hekate?");
         // highlight box
-        drawShape(SDL_GetColour(faint_blue), (700), (410), (200), (65));
-        drawShape(SDL_GetColour(faint_blue), (370), (410), (175), (65));
+        drawShape(SDL_GetColour(faint_blue), (380), (410), (175), (65));
+        drawShape(SDL_GetColour(faint_blue), (700), (410), (190), (65));
         // option text
-        drawText(fntMedium, 390, 425, SDL_GetColour(white), "(B) No");
+        drawText(fntMedium, 410, 425, SDL_GetColour(white), "(B) No");
         drawText(fntMedium, 725, 425, SDL_GetColour(white), "(A) Yes");
         updateRenderer();
 
         while (1)
         {
             hidScanInput();
-            u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
 
-            if (kDown & KEY_A)
+            if (hidKeysDown(CONTROLLER_P1_AUTO) & KEY_A)
             {
                 update_ams_hekate(AMS_URL, AMS_OUTPUT, UP_AMS);
                 break;
             }
-            if (kDown & KEY_B) break;
+            if (hidKeysDown(CONTROLLER_P1_AUTO) & KEY_B) break;
         }
     }
 
     if (!downloadFile(url, TEMP_FILE, ON))
     {
         char new_url[MAX_STRLEN];
-        if (!pharseSearch(TEMP_FILE, FILTER_STRING, new_url))
+        if (!parseSearch(TEMP_FILE, FILTER_STRING, new_url))
             if (!downloadFile(new_url, output, OFF))
                 unzip(output, mode);
     }
@@ -119,7 +120,8 @@ void update_app()
     if (!downloadFile(APP_URL, APP_OUTPUT, OFF))
     {
         remove(OLD_APP_PATH);
-        errorBox("Update complete! Restart app to take effect", app_icon);
+        // using errorBox as a message window on this occasion 
+        errorBox("Update complete!\nRestart app to take effect", app_icon);
     }
 }
 
@@ -146,6 +148,7 @@ int main(int argc, char **argv)
         hidScanInput();
         u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
 
+        // main menu display
         printOptionList(cursor);
 
         // move cursor down...
@@ -198,6 +201,5 @@ int main(int argc, char **argv)
 
     // cleanup then exit
     appExit();
-
     return 0;
 }

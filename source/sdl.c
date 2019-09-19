@@ -15,7 +15,7 @@ static SDL_Renderer *main_renderer;
 SDL_Colour colours[] = {
     { 255, 255, 255 },          //white
     { 140, 140, 140, 255 },     //grey
-    { 0, 0, 0, 255 },                //black
+    { 0, 0, 0 },                //black
     { 255, 192, 203 },          //pink
     { 255, 165, 0 },            //orange
     { 255, 255, 0 },            //yellow
@@ -69,7 +69,7 @@ void imageLoadMem(SDL_Texture **texture, void *data, int size)
 
 void drawText(TTF_Font *font, int x, int y, SDL_Color colour, const char *text)
 {
-    SDL_Surface *Surface = TTF_RenderText_Blended_Wrapped(font, text, colour, 1920);
+    SDL_Surface *Surface = TTF_RenderText_Blended_Wrapped(font, text, colour, 1280);
     SDL_Texture *Tex = SDL_CreateTextureFromSurface(main_renderer, Surface);
     SDL_Rect pos = { pos.x = x, pos.y = y, pos.w = Surface ->w, pos.h = Surface->h };
 
@@ -104,7 +104,7 @@ void loadFonts()
     PlFontData font;
     plGetSharedFontByType(&font, PlSharedFontType_Standard);
 
-    // Load that font fro memory
+    // Load that font from memory
     SDL_RWops *RWops = SDL_RWFromMem(font.address, font.size);
 
     fntSmall    = TTF_OpenFontRW(RWops, 1, 28);
@@ -143,8 +143,6 @@ void sdlInit()
 
     main_window = SDL_CreateWindow("totaljustice", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_W, SCREEN_H, SDL_WINDOW_SHOWN);
     main_renderer = SDL_CreateRenderer(main_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
-    //SDL_SetRenderDrawBlendMode(main_renderer, SDL_BLENDMODE_MOD);
     
     // highest quality
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");

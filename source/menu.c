@@ -26,21 +26,21 @@ void printOptionList(int cursor)
                                     "Update app", \
                                     "Reboot (reboot to payload)" };
 
-    char *description_list[] = {    "Updates everything for Atmosphere", \
-                                    "Updates ignoring .ini files (if they exist)", \
-                                    "Updates hekate with option to also update Atmosphere", \
-                                    "Updates app and removes old version", \
+    char *description_list[] = {    "Update everything for Atmosphere", \
+                                    "Update Atmosphere ignoring .ini files (if they exist)", \
+                                    "Update hekate with option to also update Atmosphere", \
+                                    "Update app and removes old version", \
                                     "Reboots switch (recommended after updating)" };
 
     SDL_Texture *textureArray[] = { ams_icon, ams_plus_icon, hekate_icon, app_icon, reboot_icon };
 
-    for (int i=0, nl=0; i < (CURSOR_LIST_MAX+1); i++, nl+=newline)
+    for (int i=0, nl=0; i < (CURSOR_LIST_MAX+1); i++, nl+=NEWLINE)
     {
         if (cursor != i) drawText(fntSmall, 550, (130+nl), SDL_GetColour(white), option_list[i]);
         else
         {
             //drawImageScale(right_arrow, 490, (155+nl), 30, 30);
-            drawImageScale(textureArray[i], 125, 350, 256, 256);
+            drawImage(textureArray[i], 125, 350);
             // outline box
             //drawShape(SDL_GetColour(black), (530-4), (130+nl-22), (700+8), (70+5));
             // highlight box

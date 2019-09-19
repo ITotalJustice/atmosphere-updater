@@ -1,8 +1,5 @@
 #include <stdio.h>
-#include <string.h>
-#include <unistd.h>
 #include <time.h>
-#include <math.h>
 #include <curl/curl.h>
 #include <switch.h>
 
@@ -16,15 +13,21 @@ struct MemoryStruct
 {
   char *memory;
   size_t size;
+  int mode;
 };
 
-static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userdata)
+static size_t write_memory_callback(void *contents, size_t size, size_t nmemb, void *userdata)
 {
   size_t realsize = size * nmemb;
   struct MemoryStruct *mem = (struct MemoryStruct *)userdata;
 
   char *ptr = realloc(mem->memory, mem->size + realsize + 1);
-  if (ptr == NULL) return 0;
+
+  if (ptr == NULL)
+  {
+      errorBox("Failed to realloc mem", app_icon);
+      return 0;
+  }
  
   mem->memory = ptr;
   memcpy(&(mem->memory[mem->size]), contents, realsize);
@@ -36,18 +39,22 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
 
 int download_progress(void *p, double dltotal, double dlnow, double ultotal, double ulnow)
 {
+    // if file empty or download hasn't started, exit.
     if (dltotal <= 0.0) return 0;
 
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    int counter = round(tv.tv_usec / 100000);
+    int counter = tv.tv_usec / 100000;
 
+    // update progress bar every so often.
     if (counter == 0 || counter == 2 || counter == 4 || counter == 6 || counter == 8)
     {
         printOptionList(0);
         popUpBox(fntSmall, 350, 250, SDL_GetColour(white), "Downloading...");
+        // bar max size
         drawShape(SDL_GetColour(white), 380, 380, DOWNLOAD_BAR_MAX, 30);
-        drawShape(SDL_GetColour(faint_blue), 380, 380, round((dlnow / dltotal) * DOWNLOAD_BAR_MAX), 30);
+        // progress bar being filled
+        drawShape(SDL_GetColour(faint_blue), 380, 380, (dlnow / dltotal) * DOWNLOAD_BAR_MAX, 30);
 
         updateRenderer();
     }
@@ -73,13 +80,12 @@ int downloadFile(const char *url, const char *output, int api_mode)
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
             // write calls
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_memory_callback);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
-            // progress calls, still slowish
+            // progress calls, ssl still slow
             if (api_mode == OFF)
             {
-                printf("\n");
                 curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
                 curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, download_progress);
             }

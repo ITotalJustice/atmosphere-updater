@@ -3,8 +3,8 @@
 /* If you decide to use this header and add functions, please consider opening a pr for said functions */
 /* I would greatly appreaciate it :) */
 
-#ifndef SDL_MEMES_H
-#define SDL_MEMES_H
+#ifndef _SDL_MEMES_H_
+#define _SDL_MEMES_H_
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -30,7 +30,7 @@
 #define faint_blue  15
 
 
-TTF_Font *fntSmall, *fntMedium, *fntLarge;
+TTF_Font *fntSmall, *fntMedium, *fntLarge, *fntButton;
 SDL_Texture *background, *app_icon, *ams_icon, *ams_plus_icon, *reboot_icon, *hekate_icon;
 
 
