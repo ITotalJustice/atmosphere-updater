@@ -31,6 +31,7 @@ __**The app currently has 5 main options.**__
 **Update Hekate:**
 
 * Installs the latest release of hekate.
+* Option to install latest Atmosphere as well, when selecting update hekate.
 * Replaces **atmosphere/reboot_payload.bin** with the new hekate payload.
 
 **Update App:**
