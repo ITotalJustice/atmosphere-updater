@@ -48,9 +48,9 @@ __**The app currently has 5 main options.**__
 
 # Special Thanks!
 
-[toph](https://github.com/sudot0ph) for the design of the app icon, as well as the icons used within the app!
+[toph](https://github.com/sudot0ph) for the design of the app icon, as well as the most icons used within the app!
 
-[Black Rabbit](https://github.com/BlackRabbit22) for the design of the hekate icon!
+[Black Rabbit](https://github.com/BlackRabbit22) for the design of the plus icon!
 
 ----
 
