@@ -21,8 +21,8 @@ void printOptionList(int cursor)
     refreshScreen();
 
     char *option_list[]      = {    "Full Atmosphere update (recommended)", \
-                                    "Update Atmosphere, not overwriting .ini files", \
-                                    "Update Hekate (files and payload)", \
+                                    "Update Atmosphere (ignoring .ini files)", \
+                                    "Update Hekate (for hekate / kosmos users)", \
                                     "Update app", \
                                     "Reboot (reboot to payload)" };
 
@@ -41,8 +41,6 @@ void printOptionList(int cursor)
         {
             //drawImageScale(right_arrow, 490, (155+nl), 30, 30);
             drawImage(textureArray[i], 125, 350);
-            // outline box
-            //drawShape(SDL_GetColour(black), (530-4), (130+nl-22), (700+8), (70+5));
             // highlight box
             drawShape(SDL_GetColour(dark_blue), (530), (130+nl-20), (700), (70));
             // option text

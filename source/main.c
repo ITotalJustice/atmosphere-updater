@@ -82,7 +82,7 @@ void update_ams_hekate(char *url, char *output, int mode)
     if (mode == UP_HEKATE)
     {
         // ask if user wants to install atmosphere as well.
-        
+
         printOptionList(mode);
         popUpBox(fntMedium, 390, 250, SDL_GetColour(white), "Update AMS and hekate?");
         // highlight box
@@ -111,7 +111,9 @@ void update_ams_hekate(char *url, char *output, int mode)
         char new_url[MAX_STRLEN];
         if (!parseSearch(TEMP_FILE, FILTER_STRING, new_url))
             if (!downloadFile(new_url, output, OFF))
+            {
                 unzip(output, mode);
+            }
     }
 }
 

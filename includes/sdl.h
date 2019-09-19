@@ -29,6 +29,29 @@
 #define jordy_blue  14
 #define faint_blue  15
 
+// buttons from NintendoExt
+#define BUTTON_A            0xE0E0
+#define BUTTON_B            0xE0E1
+#define BUTTON_X            0xE0E2
+#define BUTTON_Y            0xE0E3
+#define BUTTON_L            0xE0E4
+#define BUTTON_R            0xE0E5
+#define BUTTON_ZL           0xE0E6
+#define BUTTON_ZR           0xE0E7
+#define BUTTON_SL           0xE0E8
+#define BUTTON_SR           0xE0E9
+#define BUTTON_UP           0xE0EB
+#define BUTTON_DOWN         0xE0EC
+#define BUTTON_LEFT         0xE0ED
+#define BUTTON_RIGHT        0xE0EE
+#define BUTTON_PLUS         0xE0EF
+#define BUTTON_MINUS        0xE0F0
+#define BUTTON_HOME         0xE0F4
+#define BUTTON_SCREENSSHOT  0xE0F5
+#define BUTTON_LS           0xE101
+#define BUTTON_RS           0xE102
+#define BUTTON_L3           0xE104
+#define BUTTON_R3           0xE105
 
 TTF_Font *fntSmall, *fntMedium, *fntLarge, *fntButton;
 SDL_Texture *background, *app_icon, *ams_icon, *ams_plus_icon, *reboot_icon, *hekate_icon;
@@ -44,6 +67,7 @@ void imageLoad(SDL_Texture **texture, char *path);                              
 void imageLoadMem(SDL_Texture **texture, void *data, int size);                     //load image from memory
 
 void drawText(TTF_Font *font, int x, int y, SDL_Color colour, const char *text);    //draw text to screen
+void drawButton(TTF_Font *button_font, u_int16_t button, int x, int y);             //draw button to screen
 void drawImage(SDL_Texture *texture, int x, int y);                                 //draw image to screen from texture
 void drawImageScale(SDL_Texture *texture, int x, int y, int w, int h);              //scale the image drawn to screen
 void drawShape(SDL_Colour colour, int x, int y, int w, int h);                      //draw shap (rect)

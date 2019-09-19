@@ -78,6 +78,17 @@ void drawText(TTF_Font *font, int x, int y, SDL_Color colour, const char *text)
     SDL_FreeSurface(Surface);
 }
 
+void drawButton(TTF_Font *button_font, u_int16_t button, int x, int y)
+{
+    SDL_Surface *Surface = TTF_RenderGlyph_Blended(button_font, button, SDL_GetColour(white));
+    SDL_Texture *Tex = SDL_CreateTextureFromSurface(main_renderer, Surface);
+    SDL_Rect pos = { pos.x = x, pos.y = y, pos.w = Surface ->w, pos.h = Surface->h };
+
+    SDL_RenderCopy(main_renderer, Tex, NULL, &pos);
+    SDL_DestroyTexture(Tex);
+    SDL_FreeSurface(Surface);
+}
+
 void drawImage(SDL_Texture *texture, int x, int y)
 {
     SDL_Rect pos = { pos.x = x, pos.y = y };
@@ -100,16 +111,16 @@ void drawShape(SDL_Colour colour, int x, int y, int w, int h)
 
 void loadFonts()
 {
-    // Get the font from system
+    // Get the fonts from system
     PlFontData font;
+    PlFontData button_data;
     plGetSharedFontByType(&font, PlSharedFontType_Standard);
+    plGetSharedFontByType(&button_data, PlSharedFontType_NintendoExt);
 
-    // Load that font from memory
-    SDL_RWops *RWops = SDL_RWFromMem(font.address, font.size);
-
-    fntSmall    = TTF_OpenFontRW(RWops, 1, 28);
-    fntMedium   = TTF_OpenFontRW(RWops, 1, 36);
-    fntLarge    = TTF_OpenFontRW(RWops, 1, 48);
+    fntSmall    = TTF_OpenFontRW(SDL_RWFromMem(font.address, font.size), 1, 28);
+    fntMedium   = TTF_OpenFontRW(SDL_RWFromMem(font.address, font.size), 1, 36);
+    fntLarge    = TTF_OpenFontRW(SDL_RWFromMem(font.address, font.size), 1, 48);
+    fntButton   = TTF_OpenFontRW(SDL_RWFromMem(button_data.address, button_data.size), 1, 30);
 }
 
 void loadTextures()
@@ -124,8 +135,10 @@ void loadTextures()
 
 void destroyTextures()
 {
-    // only need to close one as all point to the same file...
     TTF_CloseFont(fntSmall);
+    TTF_CloseFont(fntMedium);
+    TTF_CloseFont(fntLarge);
+    TTF_CloseFont(fntButton);
 
     SDL_DestroyTexture(background);
     SDL_DestroyTexture(app_icon);
