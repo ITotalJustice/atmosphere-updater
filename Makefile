@@ -39,7 +39,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 #---------------------------------------------------------------------------------
 APP_TITLE   := Atmosphere-Updater
 APP_AUTHOR  := TotalJustice
-APP_VERSION := 0.4.0
+APP_VERSION := 0.4.1
 
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build

@@ -78,9 +78,9 @@ void drawText(TTF_Font *font, int x, int y, SDL_Color colour, const char *text)
     SDL_FreeSurface(Surface);
 }
 
-void drawButton(TTF_Font *button_font, u_int16_t button, int x, int y)
+void drawButton(TTF_Font *font, u_int16_t btn, int x, int y, SDL_Colour colour)
 {
-    SDL_Surface *Surface = TTF_RenderGlyph_Blended(button_font, button, SDL_GetColour(white));
+    SDL_Surface *Surface = TTF_RenderGlyph_Blended(font, btn, colour);
     SDL_Texture *Tex = SDL_CreateTextureFromSurface(main_renderer, Surface);
     SDL_Rect pos = { pos.x = x, pos.y = y, pos.w = Surface ->w, pos.h = Surface->h };
 
@@ -117,10 +117,11 @@ void loadFonts()
     plGetSharedFontByType(&font, PlSharedFontType_Standard);
     plGetSharedFontByType(&button_data, PlSharedFontType_NintendoExt);
 
-    fntSmall    = TTF_OpenFontRW(SDL_RWFromMem(font.address, font.size), 1, 28);
-    fntMedium   = TTF_OpenFontRW(SDL_RWFromMem(font.address, font.size), 1, 36);
-    fntLarge    = TTF_OpenFontRW(SDL_RWFromMem(font.address, font.size), 1, 48);
-    fntButton   = TTF_OpenFontRW(SDL_RWFromMem(button_data.address, button_data.size), 1, 30);
+    fntSmall        = TTF_OpenFontRW(SDL_RWFromMem(font.address, font.size), 1, 28);
+    fntMedium       = TTF_OpenFontRW(SDL_RWFromMem(font.address, font.size), 1, 36);
+    fntLarge        = TTF_OpenFontRW(SDL_RWFromMem(font.address, font.size), 1, 48);
+    fntButton       = TTF_OpenFontRW(SDL_RWFromMem(button_data.address, button_data.size), 1, 30);
+    fntButtonBig    = TTF_OpenFontRW(SDL_RWFromMem(button_data.address, button_data.size), 1, 36);
 }
 
 void loadTextures()
@@ -131,6 +132,7 @@ void loadTextures()
     imageLoad(&ams_plus_icon,   "romfs:/ams_plus_icon.png");
     imageLoad(&reboot_icon,     "romfs:/reboot_icon.png");
     imageLoad(&hekate_icon,     "romfs:/hekate_icon.png");
+    imageLoad(&error_icon,      "romfs:/error_icon.png");
 }
 
 void destroyTextures()
@@ -139,6 +141,7 @@ void destroyTextures()
     TTF_CloseFont(fntMedium);
     TTF_CloseFont(fntLarge);
     TTF_CloseFont(fntButton);
+    TTF_CloseFont(fntButtonBig);
 
     SDL_DestroyTexture(background);
     SDL_DestroyTexture(app_icon);
@@ -146,6 +149,7 @@ void destroyTextures()
     SDL_DestroyTexture(ams_plus_icon);
     SDL_DestroyTexture(reboot_icon);
     SDL_DestroyTexture(hekate_icon);
+    SDL_DestroyTexture(error_icon);
 }
 
 void sdlInit()

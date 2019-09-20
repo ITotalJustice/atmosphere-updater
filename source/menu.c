@@ -3,7 +3,7 @@
 
 #include "menu.h"
 
-#define APP_VERSION "Atmosphere Updater: 0.4.0"
+#define APP_VERSION "Atmosphere Updater: 0.4.1"
 
 void refreshScreen(void)
 {
@@ -12,8 +12,10 @@ void refreshScreen(void)
     drawText(fntMedium, 40, 40, SDL_GetColour(white), APP_VERSION);
 
     //drawText(fntMedium, 120, 225, SDL_GetColour(white), "Menu Here"); // menu options
-    drawText(fntSmall, 950, 675, SDL_GetColour(white), "(A) Select");
-    drawText(fntSmall, 1125, 675, SDL_GetColour(white), "(+) Exit");
+    drawButton(fntButton, BUTTON_A, 970, 672, SDL_GetColour(white));
+    drawText(fntSmall, 1010, 675, SDL_GetColour(white), "Select");
+    drawButton(fntButton, BUTTON_PLUS, 1145, 672, SDL_GetColour(white));
+    drawText(fntSmall, 1185, 675, SDL_GetColour(white), "Exit");
 }
 
 void printOptionList(int cursor)
@@ -61,10 +63,25 @@ void popUpBox(TTF_Font *font, int x, int y, SDL_Colour colour, char *text)
     drawText(font, x, y, colour, text);
 }
 
-void errorBox(char *errorText, SDL_Texture *icon)
+void yesNoBox(int mode, int x, int y, char *question)
+{
+    printOptionList(mode);
+    popUpBox(fntMedium, x, y, SDL_GetColour(white), question);
+    // highlight box
+    drawShape(SDL_GetColour(faint_blue), (380), (410), (175), (65));
+    drawShape(SDL_GetColour(faint_blue), (700), (410), (190), (65));
+    // option text
+    drawButton(fntButtonBig, BUTTON_B, 410, 425, SDL_GetColour(white));
+    drawText(fntMedium, 455, 425, SDL_GetColour(white), "No");
+    drawButton(fntButtonBig, BUTTON_A, 725, 425, SDL_GetColour(white));
+    drawText(fntMedium, 770, 425, SDL_GetColour(white), "Yes");
+    updateRenderer();
+}
+
+void errorBox(char *errorText)
 {
     popUpBox(fntMedium, 350, 250, SDL_GetColour(white), errorText);
-    drawImageScale(icon, 570, 340, 128, 128);
+    drawImageScale(error_icon, 570, 340, 128, 128);
     updateRenderer();
 
     sleep(3);

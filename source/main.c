@@ -72,37 +72,48 @@ int parseSearch(char *phare_string, char *filter, char* new_string)
         }
     }
 
-    errorBox("Failed to find parse url!", app_icon);
+    errorBox("Failed to find parse url!");
     fclose(fp);
     return 1;
 }
 
-void update_ams_hekate(char *url, char *output, int mode)
+int update_ams_hekate(char *url, char *output, int mode)
 {
     if (mode == UP_HEKATE)
     {
         // ask if user wants to install atmosphere as well.
-
-        printOptionList(mode);
-        popUpBox(fntMedium, 390, 250, SDL_GetColour(white), "Update AMS and hekate?");
-        // highlight box
-        drawShape(SDL_GetColour(faint_blue), (380), (410), (175), (65));
-        drawShape(SDL_GetColour(faint_blue), (700), (410), (190), (65));
-        // option text
-        drawText(fntMedium, 410, 425, SDL_GetColour(white), "(B) No");
-        drawText(fntMedium, 725, 425, SDL_GetColour(white), "(A) Yes");
-        updateRenderer();
+        yesNoBox(mode, 390, 250, "Update AMS and hekate?");
 
         while (1)
         {
             hidScanInput();
+            u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO); 
 
-            if (hidKeysDown(CONTROLLER_P1_AUTO) & KEY_A)
+            if (kDown & KEY_A)
             {
-                update_ams_hekate(AMS_URL, AMS_OUTPUT, UP_AMS);
+                // ask if user wants to overwite the atmosphere ini files.
+                yesNoBox(mode, 355, 250, "Overwite Atmosphere ini files?");
+
+                while (1)
+                {
+                    hidScanInput();
+
+                    if (hidKeysDown(CONTROLLER_P1_AUTO) & KEY_A)
+                    {
+                        if (!update_ams_hekate(AMS_URL, AMS_OUTPUT, UP_AMS))
+                            rename("/atmosphere/reboot_payload.bin", "/bootloader/payloads/fusee-primary.bin");
+                        break;
+                    }
+                    if (hidKeysDown(CONTROLLER_P1_AUTO) & KEY_B)
+                    {
+                        if (!update_ams_hekate(AMS_URL, AMS_OUTPUT, UP_AMS_NOINI))
+                            rename("/atmosphere/reboot_payload.bin", "/bootloader/payloads/fusee-primary.bin");
+                        break;
+                    }
+                }
                 break;
             }
-            if (hidKeysDown(CONTROLLER_P1_AUTO) & KEY_B) break;
+            if (kDown & KEY_B) break;
         }
     }
 
@@ -110,11 +121,26 @@ void update_ams_hekate(char *url, char *output, int mode)
     {
         char new_url[MAX_STRLEN];
         if (!parseSearch(TEMP_FILE, FILTER_STRING, new_url))
+        {
             if (!downloadFile(new_url, output, OFF))
             {
                 unzip(output, mode);
+                if (mode == UP_HEKATE)
+                {
+                    FILE *f = fopen("/bootloader/update.bin", "r");
+                    if (f)
+                    {
+                        remove("/bootloader/update.bin");
+                    }
+                    fclose(f);
+                }
+                return 0;
             }
+            return 1;
+        }
+        return 1;
     }
+    return 1;
 }
 
 void update_app()
@@ -123,7 +149,7 @@ void update_app()
     {
         remove(OLD_APP_PATH);
         // using errorBox as a message window on this occasion 
-        errorBox("Update complete!\nRestart app to take effect", app_icon);
+        errorBox("Update complete!\nRestart app to take effect");
     }
 }
 

@@ -70,11 +70,11 @@ int reboot_payload(const char *payload)
             fclose(fp);
             reboot_to_payload();
         }
-        errorBox("Failed to open payload...", reboot_icon);
+        errorBox("Failed to open payload...");
         splExit();
         return 1;
     }
     
-    errorBox("Failed to init spl for reboot...", reboot_icon);
+    errorBox("Failed to init spl for reboot...");
     return 1;
 }
