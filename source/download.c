@@ -25,7 +25,7 @@ static size_t write_memory_callback(void *contents, size_t size, size_t nmemb, v
 
   if (ptr == NULL)
   {
-      errorBox("Failed to realloc mem");
+      errorBox(350, 250, "Failed to realloc mem");
       return 0;
   }
  
@@ -106,6 +106,6 @@ int downloadFile(const char *url, const char *output, int api_mode)
         fclose(fp);
     }
 
-    errorBox("Download failed...");
+    errorBox(350, 250, "Download failed...");
     return 1;
 }

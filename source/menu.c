@@ -78,9 +78,9 @@ void yesNoBox(int mode, int x, int y, char *question)
     updateRenderer();
 }
 
-void errorBox(char *errorText)
+void errorBox(int x, int y, char *errorText)
 {
-    popUpBox(fntMedium, 350, 250, SDL_GetColour(white), errorText);
+    popUpBox(fntMedium, x, y, SDL_GetColour(white), errorText);
     drawImageScale(error_icon, 570, 340, 128, 128);
     updateRenderer();
 
