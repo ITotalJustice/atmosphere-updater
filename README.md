@@ -22,20 +22,20 @@ __**The app currently has 5 main options.**__
 
 **Full Atmosphere Update:**
 
-* Downloads the latest atmosphere release and installs everything from that release.
+* Downloads the latest Atmosphere release and installs everything from that release.
 
 **Update Atmosphere, not overwriting .ini files:**
 
-* Downloads the latest atmosphere release and installs everything from that release ignoring .ini files.
+* Downloads the latest Atmosphere release and installs everything from that release ignoring .ini files.
 * This option will still install any missing .ini files, ensuring that the update will function correctly.
 
 **Update Hekate:**
 
-* Installs the latest release of hekate.
-* Option to install latest Atmosphere as well, when selecting update hekate.
-* If option to update Hekate + Atmosphere is selected, the new fusee-primary.bin is copied to **bootloader/payloads/fusee-primary.bin**.
-* Replaces **/atmosphere/reboot_payload.bin** with the new hekate payload.
-* Copies new Hekate payload to **bootloader/update.bin**.
+* Installs the latest release of Hekate.
+* Option to install latest Atmosphere as well, when selecting update Hekate.
+* If option to update Hekate + Atmosphere is selected, the new fusee-primary.bin is copied to **/bootloader/payloads/fusee-primary.bin**.
+* Replaces **/atmosphere/reboot_payload.bin** with the new Hekate payload.
+* Copies new Hekate payload to **/bootloader/update.bin**.
 
 **Update App:**
 
@@ -45,8 +45,8 @@ __**The app currently has 5 main options.**__
 **Reboot (reboot to payload):**
 
 * Reboots the switch, loading the payload from **/atmosphere/reboot_payload.bi**.
-* This is recommended after install atmosphere.
-* Updating atmosphere automatically includes the needed **reboot_payload.bin**.
+* This is recommended after install Atmosphere.
+* Updating Atmosphere / Hekate automatically includes the needed **reboot_payload.bin**.
 
 ----
 
