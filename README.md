@@ -54,6 +54,8 @@ __**The app currently has 5 main options.**__
 
 [Black Rabbit](https://github.com/BlackRabbit22) for the design of the plus icon!
 
+[bandithedoge](https://github.com/bandithedoge) for the background!
+
 ----
 
 # Patreon
