@@ -20,7 +20,7 @@ void copyFile(char *src, char *dest)
     if (srcfile && newfile)
     {
         char buffer[10000]; // 10kb per write, which is fast
-        size_t bytes;
+        size_t bytes;       // size of the file to write (10kb or filesize max)
 
         while (0 < (bytes = fread(buffer, 1, sizeof(buffer), srcfile)))
         {

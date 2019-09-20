@@ -33,7 +33,9 @@ __**The app currently has 5 main options.**__
 
 * Installs the latest release of hekate.
 * Option to install latest Atmosphere as well, when selecting update hekate.
-* Replaces **atmosphere/reboot_payload.bin** with the new hekate payload.
+* If option to update Hekate + Atmosphere is selected, the new fusee-primary.bin is copied to **bootloader/payloads/fusee-primary.bin**.
+* Replaces **/atmosphere/reboot_payload.bin** with the new hekate payload.
+* Copies new Hekate payload to **bootloader/update.bin**.
 
 **Update App:**
 
@@ -52,7 +54,7 @@ __**The app currently has 5 main options.**__
 
 [toph](https://github.com/sudot0ph) for the design of the app icon, as well as the most icons used within the app!
 
-[Black Rabbit](https://github.com/BlackRabbit22) for the design of the plus icon!
+[Black Rabbit](https://github.com/BlackRabbit22) for the design of the plus and error icon (and the idea for this app)!
 
 [bandithedoge](https://github.com/bandithedoge) for the background!
 
