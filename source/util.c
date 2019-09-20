@@ -3,13 +3,33 @@
 #include <switch.h>
 
 #include "util.h"
-#include "download.h"
-#include "unzip.h"
 #include "menu.h"
+#include "unzip.h"
+#include "download.h"
 #include "reboot_payload.h"
 
 #define TEMP_FILE               "/switch/atmosphere-updater/temp"
 #define FILTER_STRING           "browser_download_url\":\""
+
+
+void copyFile(char *src, char *dest)
+{
+    FILE *srcfile = fopen(src, "r");
+    FILE *newfile = fopen(dest, "wb");
+
+    if (srcfile && newfile)
+    {
+        char buffer[10000]; // 10kb per write, which is fast
+        size_t bytes;
+
+        while (0 < (bytes = fread(buffer, 1, sizeof(buffer), srcfile)))
+        {
+            fwrite(buffer, 1, bytes, newfile);
+        }
+    }
+    fclose(srcfile);
+    fclose(newfile);
+}
 
 int parseSearch(char *phare_string, char *filter, char* new_string)
 {
@@ -98,10 +118,7 @@ int update_ams_hekate(char *url, char *output, int mode)
                 // check if an update.bin is present, remove if so.
                 if (mode == UP_HEKATE)
                 {
-                    FILE *fp = fopen("/bootloader/update.bin", "r");
-                    if (fp)
-                        remove("/bootloader/update.bin");
-                    fclose(fp);
+                    copyFile("/atmosphere/reboot_payload.bin", "/bootloader/update.bin");
                 }
                 return 0;
             }

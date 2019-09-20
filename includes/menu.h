@@ -9,11 +9,10 @@
 #define NEWLINE             110
 #define MAX_STRLEN          512
 
-void refreshScreen(void);
-void printOptionList(int cursor);
-void helpScreen(int url_location, int menu_tab);
-void popUpBox(TTF_Font *font, int x, int y, SDL_Colour colour, char *text);
-void yesNoBox(int mode, int x, int y, char *question);
-void errorBox(int x, int y, char *errorText);
+void refreshScreen(void);                                                   // clear screen, display background with title
+void printOptionList(int cursor);                                           // print list of options
+void popUpBox(TTF_Font *font, int x, int y, SDL_Colour colour, char *text); // pop-up box in center of screen
+void yesNoBox(int mode, int x, int y, char *question);                      // box with yes or no option
+void errorBox(int x, int y, char *errorText);                               // used for displaying error messages
 
 #endif
