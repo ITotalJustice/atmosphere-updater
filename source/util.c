@@ -14,7 +14,7 @@
 
 void copyFile(char *src, char *dest)
 {
-    FILE *srcfile = fopen(src, "r");
+    FILE *srcfile = fopen(src, "rb");
     FILE *newfile = fopen(dest, "wb");
 
     if (srcfile && newfile)
@@ -31,18 +31,18 @@ void copyFile(char *src, char *dest)
     fclose(newfile);
 }
 
-int parseSearch(char *phare_string, char *filter, char* new_string)
+int parseSearch(char *parse_string, char *filter, char* new_string)
 {
-    FILE *fp = fopen(phare_string, "r");
+    FILE *fp = fopen(parse_string, "r");
     
     if (fp)
     {
         char c;
         while ((c = fgetc(fp)) != EOF)
         {
-            if (c == *FILTER_STRING)
+            if (c == *filter)
             {
-                for (int i = 0, len = strlen(FILTER_STRING) - 1; c == FILTER_STRING[i]; i++)
+                for (int i = 0, len = strlen(filter) - 1; c == filter[i]; i++)
                 {
                     c = fgetc(fp);
                     if (i == len)
@@ -54,7 +54,7 @@ int parseSearch(char *phare_string, char *filter, char* new_string)
                             c = fgetc(fp);
                         }
                         fclose(fp);
-                        remove(phare_string);
+                        remove(parse_string);
                         return 0;
                     }
                 }
