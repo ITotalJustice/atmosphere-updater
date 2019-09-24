@@ -131,10 +131,16 @@ int update_ams_hekate(char *url, char *output, int mode)
 
 void update_app()
 {
-    if (!downloadFile(APP_URL, APP_OUTPUT, OFF))
+    // download new nro as a tempfile.
+    if (!downloadFile(APP_URL, TEMP_FILE, OFF))
     {
+        // remove current nro file.
+        remove(APP_OUTPUT);
+        // remove nro from /switch/.
         remove(OLD_APP_PATH);
-        // using errorBox as a message window on this occasion 
+        // rename the downloaded temp_file with the correct nro name.
+        rename(TEMP_FILE, APP_OUTPUT);
+        // using errorBox as a message window on this occasion. 
         errorBox(400, 250, "      Update complete!\nRestart app to take effect");
     }
 }
