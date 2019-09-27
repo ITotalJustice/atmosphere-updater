@@ -10,25 +10,14 @@ void refreshScreen()
 {
     clearRenderer();
     
+    // app version.
     drawText(fntMedium, 40, 40, SDL_GetColour(white), APP_VERSION);
 
-    // System Version Display
-    char sysVersionBuffer[20];
-    if (!getFirmwareVersion(sysVersionBuffer))
-    {
-        char sysVersion[50];
-        snprintf(sysVersion, sizeof(sysVersion), "System Firmware Ver: %s", sysVersionBuffer);
-        drawText(fntSmall, 25, 150, SDL_GetColour(white), sysVersion);
-    }
+    // system version.
+    drawText(fntSmall, 25, 150, SDL_GetColour(white), getSysVersion());
 
-    // Atmosphere Version Display
-    char amsVersionBuffer[20];
-    if (!getAtmosphereVersion(amsVersionBuffer))
-    {
-        char amsVersion[50];
-        snprintf(amsVersion, sizeof(amsVersion), "Atmosphere Ver: %s", amsVersionBuffer);
-        drawText(fntSmall, 25, 230, SDL_GetColour(white), amsVersion);
-    }
+    // atmosphere version.
+    drawText(fntSmall, 25, 230, SDL_GetColour(white), getAmsVersion());
 
     //drawText(fntMedium, 120, 225, SDL_GetColour(white), "Menu Here"); // menu options
     drawButton(fntButton, BUTTON_A, 970, 672, SDL_GetColour(white));

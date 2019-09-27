@@ -11,9 +11,21 @@
 #define TEMP_FILE               "/switch/atmosphere-updater/temp"
 #define FILTER_STRING           "browser_download_url\":\""
 
+char g_sysVersion[50];
+char g_amsVersion[50];
 
 
-int getFirmwareVersion(char *sysVersionBuffer)
+char *getSysVersion()
+{
+    return g_sysVersion;
+}
+
+char *getAmsVersion()
+{
+    return g_amsVersion;
+}
+
+void writeSysVersion()
 {
 	Result ret = 0;
 	SetSysFirmwareVersion ver;
@@ -21,37 +33,44 @@ int getFirmwareVersion(char *sysVersionBuffer)
 	if (R_FAILED(ret = setsysGetFirmwareVersion(&ver))) 
     {
 		printf("GetFirmwareVersion() failed: 0x%x.\n\n", ret);
-		return 1;
+		return;
 	}
 
+    char sysVersionBuffer[20];
 	snprintf(sysVersionBuffer, 20, "%u.%u.%u", ver.major, ver.minor, ver.micro);
-	return 0;
+    snprintf(g_sysVersion, sizeof(g_sysVersion), "System Firmware Ver: %s", sysVersionBuffer);
 }
 
-int getAtmosphereVersion(char *amsVersionBuffer)
+void writeAmsVersion()
 {
 	Result ret = 0;
 	u64 ver;
-    u64 verhash;
+    u64 fullHash;
     SplConfigItem SplConfigItem_ExosphereVersion = (SplConfigItem)65000;
     SplConfigItem SplConfigItem_ExosphereVerHash = (SplConfigItem)65003;
 
 	if (R_FAILED(ret = splGetConfig(SplConfigItem_ExosphereVersion, &ver))) 
     {
 		printf("SplConfigItem_ExosphereVersion() failed: 0x%x.\n\n", ret);
-		return 1;
+		return;
 	}
 
-    if (R_FAILED(ret = splGetConfig(SplConfigItem_ExosphereVerHash, &verhash))) 
+    if (R_FAILED(ret = splGetConfig(SplConfigItem_ExosphereVerHash, &fullHash))) 
     {
 		printf("SplConfigItem_ExosphereVerHash() failed: 0x%x.\n\n", ret);
-		return 1;
+		return;
 	}
 
-    char verbuf[8];
-	snprintf(verbuf, sizeof(verbuf), "%lx", verhash);
-	snprintf(amsVersionBuffer, 20, "%lu.%lu.%lu-%s", (ver >> 32) & 0xFF,  (ver >> 24) & 0xFF, (ver >> 16) & 0xFF, verbuf);
-	return 0;
+    // write only the first 8 char of the hash.
+    char shortHash[8];
+	snprintf(shortHash, sizeof(shortHash), "%lx", fullHash);
+
+    // write ams version number + hash.
+    char amsVersionNum[25];
+	snprintf(amsVersionNum, sizeof(amsVersionNum), "%lu.%lu.%lu (%s)", (ver >> 32) & 0xFF,  (ver >> 24) & 0xFF, (ver >> 16) & 0xFF, shortHash);
+
+    // write string + ams version to global variable.
+    snprintf(g_amsVersion, sizeof(g_amsVersion), "Atmosphere Ver: %s", amsVersionNum);
 }
 
 void copyFile(char *src, char *dest)
