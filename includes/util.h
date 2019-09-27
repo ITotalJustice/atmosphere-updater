@@ -12,5 +12,7 @@ void copyFile(char *src, char *dest);                                   // basic
 int parseSearch(char *phare_string, char *filter, char* new_string);    // hacky way to parse a file for a string
 int update_ams_hekate(char *url, char *output, int mode);               // update either ams or hekate
 void update_app();                                                      // update the app
+char *GetFirmwareVersion();   
+char *GetAtmosphereVersion(); 
 
 #endif

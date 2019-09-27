@@ -12,6 +12,54 @@
 #define FILTER_STRING           "browser_download_url\":\""
 
 
+
+char *GetFirmwareVersion() {
+	Result ret = 0;
+	SetSysFirmwareVersion ver;
+
+	if (R_FAILED(ret = setsysGetFirmwareVersion(&ver))) 
+    {
+		printf("GetFirmwareVersion() failed: 0x%x.\n\n", ret);
+		return NULL;
+	}
+
+	static char buf[10];
+	snprintf(buf, 19, "%u.%u.%u-%u%u", ver.major, ver.minor, ver.micro, ver.revision_major, ver.revision_minor);
+    
+	return buf;
+}
+
+char *GetAtmosphereVersion(void) {
+	Result ret = 0;
+	u64 ver;
+    u64 verhash;
+    SplConfigItem SplConfigItem_ExosphereVersion = (SplConfigItem)65000;
+    SplConfigItem SplConfigItem_ExosphereVerHash = (SplConfigItem)65003;
+
+	if (R_FAILED(ret = splGetConfig(SplConfigItem_ExosphereVersion, &ver))) 
+    {
+		printf("SplConfigItem_ExosphereVersion() failed: 0x%x.\n\n", ret);
+		return NULL;
+	}
+
+    if (R_FAILED(ret = splGetConfig(SplConfigItem_ExosphereVerHash, &verhash))) 
+    {
+		printf("SplConfigItem_ExosphereVerHash() failed: 0x%x.\n\n", ret);
+		return NULL;
+	}
+
+    static char verbuf[20];
+	snprintf(verbuf, 20, "-%lx", verhash);
+    char vetarget[20];
+    *vetarget = '\0';
+    strncat(vetarget, verbuf, 8);
+
+	static char buf[100];
+	snprintf(buf, 1000, "%lu.%lu.%lu%s", (ver >> 32) & 0xFF,  (ver >> 24) & 0xFF, (ver >> 16) & 0xFF, vetarget);
+
+	return buf;
+}
+
 void copyFile(char *src, char *dest)
 {
     FILE *srcfile = fopen(src, "rb");
