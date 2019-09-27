@@ -4,23 +4,20 @@
 #include "menu.h"
 #include "util.h"
 
-#define APP_VERSION "Atmosphere Updater: 0.4.1"
+#define APP_VERSION "Atmosphere Updater: 0.4.2"
 
-void refreshScreen(void)
+void refreshScreen()
 {
     clearRenderer();
     
+    // app version.
     drawText(fntMedium, 40, 40, SDL_GetColour(white), APP_VERSION);
 
-    ////Horizon OS Version Display
-    char FirmwareVersionBuffer[100];
-    sprintf(FirmwareVersionBuffer, "Horizon OS Ver. %s", GetFirmwareVersion());
-    drawText(fntSmall, 25, 120, SDL_GetColour(white), FirmwareVersionBuffer);
+    // system version.
+    drawText(fntSmall, 25, 150, SDL_GetColour(white), getSysVersion());
 
-    ////Atmosphere Version Display
-    char AtmosphereVersionBuffer[100];
-    sprintf(AtmosphereVersionBuffer, "Atmosphere Ver. %s", GetAtmosphereVersion());
-    drawText(fntSmall, 25, 180, SDL_GetColour(white), AtmosphereVersionBuffer);
+    // atmosphere version.
+    drawText(fntSmall, 25, 230, SDL_GetColour(white), getAmsVersion());
 
     //drawText(fntMedium, 120, 225, SDL_GetColour(white), "Menu Here"); // menu options
     drawButton(fntButton, BUTTON_A, 970, 672, SDL_GetColour(white));

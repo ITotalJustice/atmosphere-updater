@@ -9,31 +9,36 @@
 #include "download.h"
 #include "reboot_payload.h"
 
-//#define DEBUG                 // enable for nxlink debug
+//#define DEBUG                                              // enable for nxlink debug
 
 int appInit()
 {
-    socketInitializeDefault();  // for curl / nxlink
-    #ifdef DEBUG
-    nxlinkStdio();
-    #endif
-    plInitialize();             // for shared fonts
-    romfsInit();
-    sdlInit();
-    romfsExit();                // exit romfs after loading sdl as we no longer need it.
-
     Result rc;
 
-    rc = setsysInitialize(); // for Horizon Os Version
-    if (R_FAILED(rc))
-    {
-        printf("setsysInitialize() failed: 0x%x.\n\n", rc);
-    }
+    if (R_FAILED(rc = socketInitializeDefault()))           // for curl / nxlink.
+        printf("socketInitializeDefault() failed: 0x%x.\n\n", rc);
 
-    if (R_FAILED(rc = splInitialize())) //For Atmosphere version
-    {
+    #ifdef DEBUG
+    if (R_FAILED(rc = nxlinkStdio()))                       // redirect all printout to console window.
+        printf("nxlinkStdio() failed: 0x%x.\n\n", rc)
+    #endif
+
+    if (R_FAILED(rc = setsysInitialize()))                  // for system version
+        printf("setsysInitialize() failed: 0x%x.\n\n", rc);
+
+    if (R_FAILED(rc = splInitialize()))                     // for atmosphere version
         printf("splInitialize() failed: 0x%x.\n\n", rc);
-    }
+
+    if (R_FAILED(rc = plInitialize()))                      // for shared fonts.
+        printf("plInitialize() failed: 0x%x.\n\n", rc);
+
+    if (R_FAILED(rc = romfsInit()))                         // load textures from app.
+        printf("romfsInit() failed: 0x%x.\n\n", rc);
+
+    sdlInit();                                              // int all of sdl and start loading textures.
+
+    romfsExit();                                            // exit romfs after loading sdl as we no longer need it.
+
     return 0;
 }
 
@@ -42,16 +47,22 @@ void appExit()
     sdlExit();
     socketExit();
     plExit();
+    splExit();
+    setsysExit();
 }
 
 int main(int argc, char **argv)
 {
-    // init stuff
+    // init stuff.
     appInit();
     mkdir(APP_PATH, 0777);
     chdir(ROOT);
 
-    // set the cursor position to 0
+    // write sys / ams version to char*.
+    writeSysVersion();
+    writeAmsVersion();
+
+    // set the cursor position to 0.
     short cursor = 0;
 
     // TODO: touch
