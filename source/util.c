@@ -13,23 +13,23 @@
 
 
 
-char *GetFirmwareVersion() {
+int getFirmwareVersion(char *sysVersionBuffer)
+{
 	Result ret = 0;
 	SetSysFirmwareVersion ver;
 
 	if (R_FAILED(ret = setsysGetFirmwareVersion(&ver))) 
     {
 		printf("GetFirmwareVersion() failed: 0x%x.\n\n", ret);
-		return NULL;
+		return 1;
 	}
 
-	static char buf[10];
-	snprintf(buf, 19, "%u.%u.%u-%u%u", ver.major, ver.minor, ver.micro, ver.revision_major, ver.revision_minor);
-    
-	return buf;
+	snprintf(sysVersionBuffer, 20, "%u.%u.%u", ver.major, ver.minor, ver.micro);
+	return 0;
 }
 
-char *GetAtmosphereVersion(void) {
+int getAtmosphereVersion(char *amsVersionBuffer)
+{
 	Result ret = 0;
 	u64 ver;
     u64 verhash;
@@ -39,25 +39,19 @@ char *GetAtmosphereVersion(void) {
 	if (R_FAILED(ret = splGetConfig(SplConfigItem_ExosphereVersion, &ver))) 
     {
 		printf("SplConfigItem_ExosphereVersion() failed: 0x%x.\n\n", ret);
-		return NULL;
+		return 1;
 	}
 
     if (R_FAILED(ret = splGetConfig(SplConfigItem_ExosphereVerHash, &verhash))) 
     {
 		printf("SplConfigItem_ExosphereVerHash() failed: 0x%x.\n\n", ret);
-		return NULL;
+		return 1;
 	}
 
-    static char verbuf[20];
-	snprintf(verbuf, 20, "-%lx", verhash);
-    char vetarget[20];
-    *vetarget = '\0';
-    strncat(vetarget, verbuf, 8);
-
-	static char buf[100];
-	snprintf(buf, 1000, "%lu.%lu.%lu%s", (ver >> 32) & 0xFF,  (ver >> 24) & 0xFF, (ver >> 16) & 0xFF, vetarget);
-
-	return buf;
+    char verbuf[8];
+	snprintf(verbuf, sizeof(verbuf), "%lx", verhash);
+	snprintf(amsVersionBuffer, 20, "%lu.%lu.%lu-%s", (ver >> 32) & 0xFF,  (ver >> 24) & 0xFF, (ver >> 16) & 0xFF, verbuf);
+	return 0;
 }
 
 void copyFile(char *src, char *dest)

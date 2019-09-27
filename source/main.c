@@ -24,16 +24,12 @@ int appInit()
 
     Result rc;
 
-    rc = setsysInitialize(); // for Horizon Os Version
-    if (R_FAILED(rc))
-    {
+    if (R_FAILED(rc = setsysInitialize()))  // For Horizon OS Version
         printf("setsysInitialize() failed: 0x%x.\n\n", rc);
-    }
 
-    if (R_FAILED(rc = splInitialize())) //For Atmosphere version
-    {
+    if (R_FAILED(rc = splInitialize()))     // For Atmosphere version
         printf("splInitialize() failed: 0x%x.\n\n", rc);
-    }
+
     return 0;
 }
 
@@ -42,6 +38,7 @@ void appExit()
     sdlExit();
     socketExit();
     plExit();
+    splExit();
 }
 
 int main(int argc, char **argv)
