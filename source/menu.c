@@ -2,6 +2,7 @@
 #include <switch.h>
 
 #include "menu.h"
+#include "util.h"
 
 #define APP_VERSION "Atmosphere Updater: 0.4.1"
 
@@ -10,6 +11,16 @@ void refreshScreen(void)
     clearRenderer();
     
     drawText(fntMedium, 40, 40, SDL_GetColour(white), APP_VERSION);
+
+    ////Horizon OS Version Display
+    char FirmwareVersionBuffer[100];
+    sprintf(FirmwareVersionBuffer, "Horizon OS Ver. %s", GetFirmwareVersion());
+    drawText(fntSmall, 25, 120, SDL_GetColour(white), FirmwareVersionBuffer);
+
+    ////Atmosphere Version Display
+    char AtmosphereVersionBuffer[100];
+    sprintf(AtmosphereVersionBuffer, "Atmosphere Ver. %s", GetAtmosphereVersion());
+    drawText(fntSmall, 25, 180, SDL_GetColour(white), AtmosphereVersionBuffer);
 
     //drawText(fntMedium, 120, 225, SDL_GetColour(white), "Menu Here"); // menu options
     drawButton(fntButton, BUTTON_A, 970, 672, SDL_GetColour(white));

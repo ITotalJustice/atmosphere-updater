@@ -21,6 +21,19 @@ int appInit()
     romfsInit();
     sdlInit();
     romfsExit();                // exit romfs after loading sdl as we no longer need it.
+
+    Result rc;
+
+    rc = setsysInitialize(); // for Horizon Os Version
+    if (R_FAILED(rc))
+    {
+        printf("setsysInitialize() failed: 0x%x.\n\n", rc);
+    }
+
+    if (R_FAILED(rc = splInitialize())) //For Atmosphere version
+    {
+        printf("splInitialize() failed: 0x%x.\n\n", rc);
+    }
     return 0;
 }
 
