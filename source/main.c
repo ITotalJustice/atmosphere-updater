@@ -98,7 +98,7 @@ int main(int argc, char **argv)
         }
 
         // select option
-        if (kDown & KEY_A || (touch_lock == OFF && touch.px > 530 && touch.px < 1200 && touch.py > 130 && touch.py < 640))
+        if (kDown & KEY_A || (touch_lock == OFF && touch.px > 530 && touch.px < 1200 && touch.py > FIRST_LINE - HIGHLIGHT_BOX_MIN && touch.py < (NEWLINE * CURSOR_LIST_MAX) + FIRST_LINE + HIGHLIGHT_BOX_MAX))
         {
             // check if the user used touch to enter this option.
             if (touch_lock == OFF && touch_count > 0)
@@ -134,7 +134,7 @@ int main(int argc, char **argv)
         }
 
         // exit...
-        if (kDown & KEY_PLUS || (touch.px > 1145 && touch.px < 1280 && touch.py > 675 && touch.py < 720))
+        if (kDown & KEY_PLUS || (touch.px > 1145 && touch.px < SCREEN_W && touch.py > 675 && touch.py < SCREEN_H))
             break;
 
         // lock touch if the user has already touched the screen (touch tap).

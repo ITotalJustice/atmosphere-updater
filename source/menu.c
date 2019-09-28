@@ -47,15 +47,15 @@ void printOptionList(int cursor)
 
     for (int i=0, nl=0; i < (CURSOR_LIST_MAX+1); i++, nl+=NEWLINE)
     {
-        if (cursor != i) drawText(fntSmall, 550, (FIRST_LINE+nl), SDL_GetColour(white), option_list[i]);
+        if (cursor != i) drawText(fntSmall, 550, FIRST_LINE+nl, SDL_GetColour(white), option_list[i]);
         else
         {
             // icon for the option selected.
             drawImage(textureArray[i], 125, 350);
             // highlight box.
-            drawShape(SDL_GetColour(dark_blue), (530), (FIRST_LINE+nl-20), (700), (70));
+            drawShape(SDL_GetColour(dark_blue), 530, (FIRST_LINE + nl - HIGHLIGHT_BOX_MIN), 700, HIGHLIGHT_BOX_MAX);
             // option text.
-            drawText(fntSmall, 550, (FIRST_LINE+nl), SDL_GetColour(jordy_blue), option_list[i]);
+            drawText(fntSmall, 550, FIRST_LINE+nl, SDL_GetColour(jordy_blue), option_list[i]);
             // description.
             drawText(fntSmall, 25, 675, SDL_GetColour(white), description_list[i]);
         }
@@ -64,11 +64,11 @@ void printOptionList(int cursor)
 
 void popUpBox(TTF_Font *font, int x, int y, SDL_Colour colour, char *text)
 {
-    // shadow box
-    drawShape(SDL_GetColour(black), (SCREEN_W/4-5), (SCREEN_H/4-5), (SCREEN_W/2+10), (SCREEN_H/2+10));
-    // popup box
-    drawShape(SDL_GetColour(dark_blue), (SCREEN_W/4), (SCREEN_H/4), (SCREEN_W/2), (SCREEN_H/2));
-    // text to draw
+    // outline. box
+    drawShape(SDL_GetColour(black), (SCREEN_W/4)-5, (SCREEN_H/4)-5, (SCREEN_W/2)+10, (SCREEN_H/2)+10);
+    // popup box.
+    drawShape(SDL_GetColour(dark_blue), SCREEN_W/4, SCREEN_H/4, SCREEN_W/2, SCREEN_H/2);
+    // text to draw.
     drawText(font, x, y, colour, text);
 }
 
@@ -76,10 +76,10 @@ int yesNoBox(int mode, int x, int y, char *question)
 {
     printOptionList(mode);
     popUpBox(fntMedium, x, y, SDL_GetColour(white), question);
-    // highlight box
-    drawShape(SDL_GetColour(faint_blue), (380), (410), (175), (65));
-    drawShape(SDL_GetColour(faint_blue), (700), (410), (190), (65));
-    // option text
+    // highlight box.
+    drawShape(SDL_GetColour(faint_blue), 380, 410, 175, 65);
+    drawShape(SDL_GetColour(faint_blue), 700, 410, 190, 65);
+    // option text.
     drawButton(fntButtonBig, BUTTON_B, 410, 425, SDL_GetColour(white));
     drawText(fntMedium, 455, 425, SDL_GetColour(white), "No");
     drawButton(fntButtonBig, BUTTON_A, 725, 425, SDL_GetColour(white));

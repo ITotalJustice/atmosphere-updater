@@ -3,15 +3,12 @@
 #include "menu.h"
 #include "util.h"
 
-#define TOUCH_MIN 20
-#define TOUCH_MAX 90
-
 int touch_cursor(int x, int y)
 {
     int cursor = 0;
 
     for (int nl=0; cursor < (CURSOR_LIST_MAX+1); cursor++, nl+=NEWLINE)
-        if (y > FIRST_LINE+nl-TOUCH_MIN && y < FIRST_LINE+TOUCH_MAX+nl)
+        if (y > (FIRST_LINE + nl - HIGHLIGHT_BOX_MIN) && y < (FIRST_LINE + nl + NEWLINE - HIGHLIGHT_BOX_MIN))
             break;
             
     return cursor;
