@@ -60,21 +60,14 @@ static void reboot_to_payload(void)
 // AMS CODE END
 
 int reboot_payload(const char *payload)
-{
-    if (!R_FAILED(splInitialize()))
-    {     		
-        FILE *fp = fopen(payload, "rb");
-        if (fp)
-        {
-            fread(g_reboot_payload, 1, sizeof(g_reboot_payload), fp);
-            fclose(fp);
-            reboot_to_payload();
-        }
-        errorBox(350, 250, "Failed to open payload...");
-        splExit();
-        return 1;
+{   		
+    FILE *fp = fopen(payload, "rb");
+    if (fp)
+    {
+        fread(g_reboot_payload, 1, sizeof(g_reboot_payload), fp);
+        fclose(fp);
+        reboot_to_payload();
     }
-    
-    errorBox(350, 250, "Failed to init spl for reboot...");
+    errorBox(350, 250, "Failed to open payload...");
     return 1;
 }

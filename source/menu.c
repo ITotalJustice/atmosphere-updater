@@ -50,13 +50,13 @@ void printOptionList(int cursor)
         if (cursor != i) drawText(fntSmall, 550, (FIRST_LINE+nl), SDL_GetColour(white), option_list[i]);
         else
         {
-            //drawImageScale(right_arrow, 490, (155+nl), 30, 30);
+            // icon for the option selected.
             drawImage(textureArray[i], 125, 350);
-            // highlight box
+            // highlight box.
             drawShape(SDL_GetColour(dark_blue), (530), (FIRST_LINE+nl-20), (700), (70));
-            // option text
+            // option text.
             drawText(fntSmall, 550, (FIRST_LINE+nl), SDL_GetColour(jordy_blue), option_list[i]);
-            // description
+            // description.
             drawText(fntSmall, 25, 675, SDL_GetColour(white), description_list[i]);
         }
     }

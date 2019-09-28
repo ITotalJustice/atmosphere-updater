@@ -8,9 +8,13 @@
 
 int touch_cursor(int x, int y)
 {
-    for (int cursor = 0, nl=0; cursor < (CURSOR_LIST_MAX+1); cursor++, nl+=NEWLINE)
+    int cursor = 0;
+
+    for (int nl=0; cursor < (CURSOR_LIST_MAX+1); cursor++, nl+=NEWLINE)
         if (y > FIRST_LINE+nl-TOUCH_MIN && y < FIRST_LINE+TOUCH_MAX+nl)
-            return cursor;
+            break;
+            
+    return cursor;
 }
 
 int touch_yes_no_option(int x, int y)
