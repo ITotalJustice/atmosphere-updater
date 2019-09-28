@@ -2,6 +2,7 @@
 #include <switch.h>
 
 #include "menu.h"
+#include "touch.h"
 #include "util.h"
 
 #define APP_VERSION "Atmosphere Updater: 0.4.2"
@@ -46,15 +47,15 @@ void printOptionList(int cursor)
 
     for (int i=0, nl=0; i < (CURSOR_LIST_MAX+1); i++, nl+=NEWLINE)
     {
-        if (cursor != i) drawText(fntSmall, 550, (130+nl), SDL_GetColour(white), option_list[i]);
+        if (cursor != i) drawText(fntSmall, 550, (FIRST_LINE+nl), SDL_GetColour(white), option_list[i]);
         else
         {
             //drawImageScale(right_arrow, 490, (155+nl), 30, 30);
             drawImage(textureArray[i], 125, 350);
             // highlight box
-            drawShape(SDL_GetColour(dark_blue), (530), (130+nl-20), (700), (70));
+            drawShape(SDL_GetColour(dark_blue), (530), (FIRST_LINE+nl-20), (700), (70));
             // option text
-            drawText(fntSmall, 550, (130+nl), SDL_GetColour(jordy_blue), option_list[i]);
+            drawText(fntSmall, 550, (FIRST_LINE+nl), SDL_GetColour(jordy_blue), option_list[i]);
             // description
             drawText(fntSmall, 25, 675, SDL_GetColour(white), description_list[i]);
         }
@@ -71,7 +72,7 @@ void popUpBox(TTF_Font *font, int x, int y, SDL_Colour colour, char *text)
     drawText(font, x, y, colour, text);
 }
 
-void yesNoBox(int mode, int x, int y, char *question)
+int yesNoBox(int mode, int x, int y, char *question)
 {
     printOptionList(mode);
     popUpBox(fntMedium, x, y, SDL_GetColour(white), question);
@@ -83,7 +84,36 @@ void yesNoBox(int mode, int x, int y, char *question)
     drawText(fntMedium, 455, 425, SDL_GetColour(white), "No");
     drawButton(fntButtonBig, BUTTON_A, 725, 425, SDL_GetColour(white));
     drawText(fntMedium, 770, 425, SDL_GetColour(white), "Yes");
+
     updateRenderer();
+
+    int res = 0;
+    int touch_lock = OFF;
+    touchPosition touch;
+    u32 tch = 0;
+    u32 touch_count = hidTouchCount();
+
+    // check if the user is already touching the screen.
+    if (touch_count > 0) touch_lock = ON;
+
+    while (1)
+    {
+        hidScanInput();
+        u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
+        hidTouchRead(&touch, tch);
+        touch_count = hidTouchCount();
+
+        if (touch_count == 0) touch_lock = OFF;
+
+        if (touch_count > 0 && touch_lock == OFF)
+            res = touch_yes_no_option(touch.px, touch.py);
+
+        if (kDown & KEY_A || res == YES)
+            return YES;
+
+        if (kDown & KEY_B || res == NO)
+            return NO;
+    }
 }
 
 void errorBox(int x, int y, char *errorText)

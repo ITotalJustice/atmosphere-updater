@@ -4,6 +4,7 @@
 #include <switch.h>
 
 #include "util.h"
+#include "touch.h"
 #include "menu.h"
 #include "unzip.h"
 #include "download.h"
@@ -65,17 +66,19 @@ int main(int argc, char **argv)
     // set the cursor position to 0.
     short cursor = 0;
 
-    // TODO: touch
-    /*u32 tch = 0;
+    // touch variables.
+    int touch_lock = OFF;
+    u32 tch = 0;
     touchPosition touch;
-    hidTouchRead(&touch, tch);
-    if (KEY_TOUCH && touch.px > 530 && touch.px < 1200 && touch.py > 130-20 && touch.py < 130-20+70)*/
     
     // muh loooooop
     while(appletMainLoop())
     {
+        // scan for button / touch input each frame.
         hidScanInput();
         u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
+        hidTouchRead(&touch, tch);
+        u32 touch_count = hidTouchCount();
 
         // main menu display
         printOptionList(cursor);
@@ -95,34 +98,48 @@ int main(int argc, char **argv)
         }
 
         // select option
-        if (kDown & KEY_A)
+        if (kDown & KEY_A || (touch_lock == OFF && touch.px > 530 && touch.px < 1200 && touch.py > 130 && touch.py < 640))
         {
+            // check if the user used touch to enter this option.
+            if (touch_lock == OFF && touch_count > 0)
+                cursor = touch_cursor(touch.px, touch.py);
+
             switch (cursor)
             {
             case UP_AMS:
-                update_ams_hekate(AMS_URL, AMS_OUTPUT, cursor);
+                if (yesNoBox(cursor, 390, 250, "Update Atmosphere?") == YES)
+                    update_ams_hekate(AMS_URL, AMS_OUTPUT, cursor);
                 break;
 
             case UP_AMS_NOINI:
-                update_ams_hekate(AMS_URL, AMS_OUTPUT, cursor);
+                if (yesNoBox(cursor, 390, 250, "Update Atmosphere\n(ignoring .ini files)?") == YES)
+                    update_ams_hekate(AMS_URL, AMS_OUTPUT, cursor);
                 break;
 
             case UP_HEKATE:
-                update_ams_hekate(HEKATE_URL, HEKATE_OUTPUT, cursor);
+                if (yesNoBox(cursor, 390, 250, "Update Hekate?") == YES)
+                    update_ams_hekate(HEKATE_URL, HEKATE_OUTPUT, cursor);
                 break;
 
             case UP_APP:
-                update_app();
+                if (yesNoBox(cursor, 390, 250, "Update App?") == YES)
+                    update_app();
                 break;
 
             case REBOOT_PAYLOAD:
-                reboot_payload("/atmosphere/reboot_payload.bin");
+                if (yesNoBox(cursor, 390, 250, "Reboot to Payload?") == YES)
+                    reboot_payload("/atmosphere/reboot_payload.bin");
                 break;
             }
         }
-        
+
         // exit...
-        if (kDown & KEY_PLUS) break;
+        if (kDown & KEY_PLUS || (touch.px > 1145 && touch.px < 1280 && touch.py > 675 && touch.py < 720))
+            break;
+
+        // lock touch if the user has already touched the screen (touch tap).
+        if (touch_count > 0) touch_lock = ON;
+        else touch_lock = OFF;
 
         // display render buffer
         updateRenderer();

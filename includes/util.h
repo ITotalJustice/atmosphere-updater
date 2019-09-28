@@ -8,6 +8,11 @@
 #define APP_OUTPUT              "/switch/atmosphere-updater/atmosphere-updater.nro"
 #define OLD_APP_PATH            "/switch/atmosphere-updater.nro"
 
+#define YES                     10
+#define NO                      20
+#define ON                      1
+#define OFF                     0
+
 void writeSysVersion();                                                 // writes the sys version.
 void writeAmsVersion();                                                 // writes the ams version with hash.
 char *getSysVersion();                                                  // returns sys version.

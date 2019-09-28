@@ -38,7 +38,7 @@ void writeSysVersion()
 
     char sysVersionBuffer[20];
 	snprintf(sysVersionBuffer, 20, "%u.%u.%u", ver.major, ver.minor, ver.micro);
-    snprintf(g_sysVersion, sizeof(g_sysVersion), "System Firmware Ver: %s", sysVersionBuffer);
+    snprintf(g_sysVersion, sizeof(g_sysVersion), "Firmware Ver: %s", sysVersionBuffer);
 }
 
 void writeAmsVersion()
@@ -133,37 +133,24 @@ int update_ams_hekate(char *url, char *output, int mode)
     if (mode == UP_HEKATE)
     {
         // ask if user wants to install atmosphere as well.
-        yesNoBox(mode, 390, 250, "Update AMS and hekate?");
+        int res = yesNoBox(mode, 390, 250, "Update AMS and hekate?");
 
-        while (1)
+        if (res == YES)
         {
-            hidScanInput();
+            // ask if user wants to overwite the atmosphere ini files.
+            res = yesNoBox(mode, 355, 250, "Overwite Atmosphere ini files?");
 
-            if (hidKeysDown(CONTROLLER_P1_AUTO) & KEY_A)
+            if (res == YES)
             {
-                // ask if user wants to overwite the atmosphere ini files.
-                yesNoBox(mode, 355, 250, "Overwite Atmosphere ini files?");
-
-                while (1)
-                {
-                    hidScanInput();
-
-                    if (hidKeysDown(CONTROLLER_P1_AUTO) & KEY_A)
-                    {
-                        if (!update_ams_hekate(AMS_URL, AMS_OUTPUT, UP_AMS))
-                            rename("/atmosphere/reboot_payload.bin", "/bootloader/payloads/fusee-primary.bin");
-                        break;
-                    }
-                    if (hidKeysDown(CONTROLLER_P1_AUTO) & KEY_B)
-                    {
-                        if (!update_ams_hekate(AMS_URL, AMS_OUTPUT, UP_AMS_NOINI))
-                            rename("/atmosphere/reboot_payload.bin", "/bootloader/payloads/fusee-primary.bin");
-                        break;
-                    }
-                }
-                break;
+                if (!update_ams_hekate(AMS_URL, AMS_OUTPUT, UP_AMS))
+                    rename("/atmosphere/reboot_payload.bin", "/bootloader/payloads/fusee-primary.bin");
             }
-            if (hidKeysDown(CONTROLLER_P1_AUTO) & KEY_B) break;
+
+            else
+            {
+                if (!update_ams_hekate(AMS_URL, AMS_OUTPUT, UP_AMS_NOINI))
+                    rename("/atmosphere/reboot_payload.bin", "/bootloader/payloads/fusee-primary.bin");
+            }
         }
     }
 
