@@ -44,7 +44,7 @@ __**The app currently has 5 main options.**__
 
 **Reboot (reboot to payload):**
 
-* Reboots the switch, loading the payload from **/atmosphere/reboot_payload.bi**.
+* Reboots the switch, loading the payload from **/atmosphere/reboot_payload.bin**.
 * This is recommended after install Atmosphere.
 * Updating Atmosphere / Hekate automatically includes the needed **reboot_payload.bin**.
 
@@ -57,6 +57,8 @@ __**The app currently has 5 main options.**__
 [Black Rabbit](https://github.com/BlackRabbit22) for the design of the plus and error icon (and the idea for this app)!
 
 [bandithedoge](https://github.com/bandithedoge) for the background!
+
+[KrankRival](https://github.com/KranKRival) for the initial sys / ams version pr (and for motivating me to work on touch controls)!
 
 ----
 

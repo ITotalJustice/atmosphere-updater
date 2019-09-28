@@ -5,7 +5,7 @@
 #include "touch.h"
 #include "util.h"
 
-#define APP_VERSION "Atmosphere Updater: 0.4.2"
+#define APP_VERSION "Atmosphere Updater: 0.5.0"
 
 void refreshScreen()
 {
