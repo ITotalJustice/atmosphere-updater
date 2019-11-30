@@ -21,7 +21,7 @@ int appInit()
 
     #ifdef DEBUG
     if (R_FAILED(rc = nxlinkStdio()))                       // redirect all printout to console window.
-        printf("nxlinkStdio() failed: 0x%x.\n\n", rc)
+        printf("nxlinkStdio() failed: 0x%x.\n\n", rc);
     #endif
 
     if (R_FAILED(rc = setsysInitialize()))                  // for system version
