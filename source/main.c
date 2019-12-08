@@ -4,6 +4,7 @@
 #include <switch.h>
 
 #include "util.h"
+#include "sdl_easy.h"
 #include "touch.h"
 #include "menu.h"
 #include "unzip.h"
@@ -36,7 +37,7 @@ int appInit()
     if (R_FAILED(rc = romfsInit()))                         // load textures from app.
         printf("romfsInit() failed: 0x%x.\n\n", rc);
 
-    sdlInit();                                              // int all of sdl and start loading textures.
+    SDL_EasyInit();                                              // int all of sdl and start loading textures.
 
     romfsExit();                                            // exit romfs after loading sdl as we no longer need it.
 
@@ -45,7 +46,7 @@ int appInit()
 
 void appExit()
 {
-    sdlExit();
+    SDL_EasyExit();
     socketExit();
     plExit();
     splExit();
@@ -68,7 +69,7 @@ int main(int argc, char **argv)
 
     // touch variables.
     int touch_lock = OFF;
-    u32 tch = 0;
+    uint32_t tch = 0;
     touchPosition touch;
     
     // muh loooooop
@@ -76,9 +77,9 @@ int main(int argc, char **argv)
     {
         // scan for button / touch input each frame.
         hidScanInput();
-        u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
+        uint64_t kDown = hidKeysDown(CONTROLLER_P1_AUTO);
         hidTouchRead(&touch, tch);
-        u32 touch_count = hidTouchCount();
+        uint32_t touch_count = hidTouchCount();
 
         // main menu display
         printOptionList(cursor);
@@ -142,7 +143,7 @@ int main(int argc, char **argv)
         else touch_lock = OFF;
 
         // display render buffer
-        updateRenderer();
+        SDL_UpdateRenderer();
     }
 
     // cleanup then exit

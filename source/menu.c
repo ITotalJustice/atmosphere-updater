@@ -1,97 +1,108 @@
 #include <unistd.h>
 #include <switch.h>
 
+#include "sdl_easy.h"
 #include "menu.h"
 #include "touch.h"
 #include "util.h"
 
 #define APP_VERSION "Atmosphere Updater: 0.5.0"
 
+
 void refreshScreen()
 {
-    clearRenderer();
+    SDL_ClearRenderer();
+
+    SDL_DrawImage(background, 0, 0);
     
     // app version.
-    drawText(fntMedium, 40, 40, SDL_GetColour(white), APP_VERSION);
+    SDL_DrawText(fntMedium, 40, 40, Colour_White, APP_VERSION);
 
     // system version.
-    drawText(fntSmall, 25, 150, SDL_GetColour(white), getSysVersion());
+    SDL_DrawText(fntSmall, 25, 150, Colour_White, getSysVersion());
 
     // atmosphere version.
-    drawText(fntSmall, 25, 230, SDL_GetColour(white), getAmsVersion());
+    SDL_DrawText(fntSmall, 25, 230, Colour_White, getAmsVersion());
 
-    //drawText(fntMedium, 120, 225, SDL_GetColour(white), "Menu Here"); // menu options
-    drawButton(fntButton, BUTTON_A, 970, 672, SDL_GetColour(white));
-    drawText(fntSmall, 1010, 675, SDL_GetColour(white), "Select");
-    drawButton(fntButton, BUTTON_PLUS, 1145, 672, SDL_GetColour(white));
-    drawText(fntSmall, 1185, 675, SDL_GetColour(white), "Exit");
+    //SDL_DrawText(fntMedium, 120, 225, Colour_White, "Menu Here"); // menu options
+    SDL_DrawButton(fntButton, Font_Button_A, 970, 672, Colour_White);
+    SDL_DrawText(fntSmall, 1010, 675, Colour_White, "Select");
+    SDL_DrawButton(fntButton, Font_Button_PLUS, 1145, 672, Colour_White);
+    SDL_DrawText(fntSmall, 1185, 675, Colour_White, "Exit");
 }
 
 void printOptionList(int cursor)
 {
     refreshScreen();
 
-    char *option_list[]      = {    "Full Atmosphere update (recommended)", \
-                                    "Update Atmosphere (ignoring .ini files)", \
-                                    "Update Hekate (for hekate / kosmos users)", \
-                                    "Update app", \
-                                    "Reboot (reboot to payload)" };
+    char *option_list[] =
+    {
+        "Full Atmosphere update (recommended)",
+        "Update Atmosphere (ignoring .ini files)",
+        "Update Hekate (for hekate / kosmos users)",
+        "Update app",
+        "Reboot (reboot to payload)"
+    };
 
-    char *description_list[] = {    "Update everything for Atmosphere", \
-                                    "Update Atmosphere ignoring .ini files (if they exist)", \
-                                    "Update hekate with option to also update Atmosphere", \
-                                    "Update app and removes old version", \
-                                    "Reboots switch (recommended after updating)" };
+    char *description_list[] =
+    {
+        "Update everything for Atmosphere",
+        "Update Atmosphere ignoring .ini files (if they exist)",
+        "Update hekate with option to also update Atmosphere",
+        "Update app and removes old version",
+        "Reboots switch (recommended after updating)"
+    };
 
     SDL_Texture *textureArray[] = { ams_icon, ams_plus_icon, hekate_icon, app_icon, reboot_icon };
 
     for (int i=0, nl=0; i < (CURSOR_LIST_MAX+1); i++, nl+=NEWLINE)
     {
-        if (cursor != i) drawText(fntSmall, 550, FIRST_LINE+nl, SDL_GetColour(white), option_list[i]);
+        if (cursor != i)
+            SDL_DrawText(fntSmall, 550, FIRST_LINE+nl, Colour_White, option_list[i]);
         else
         {
             // icon for the option selected.
-            drawImage(textureArray[i], 125, 350);
+            SDL_DrawImage(textureArray[i], 125, 350);
             // highlight box.
-            drawShape(SDL_GetColour(dark_blue), 530, (FIRST_LINE + nl - HIGHLIGHT_BOX_MIN), 700, HIGHLIGHT_BOX_MAX);
+            SDL_DrawShape(Colour_DarkBlue, 530, (FIRST_LINE + nl - HIGHLIGHT_BOX_MIN), 700, HIGHLIGHT_BOX_MAX);
             // option text.
-            drawText(fntSmall, 550, FIRST_LINE+nl, SDL_GetColour(jordy_blue), option_list[i]);
+            SDL_DrawText(fntSmall, 550, FIRST_LINE+nl, Colour_JordyBlue, option_list[i]);
             // description.
-            drawText(fntSmall, 25, 675, SDL_GetColour(white), description_list[i]);
+            SDL_DrawText(fntSmall, 25, 675, Colour_White, description_list[i]);
         }
     }
 }
 
-void popUpBox(TTF_Font *font, int x, int y, SDL_Colour colour, char *text)
+void popUpBox(TTF_Font *font, int x, int y, Colour colour, char *text)
 {
     // outline. box
-    drawShape(SDL_GetColour(black), (SCREEN_W/4)-5, (SCREEN_H/4)-5, (SCREEN_W/2)+10, (SCREEN_H/2)+10);
+    SDL_DrawShape(Colour_Black, (SCREEN_W/4)-5, (SCREEN_H/4)-5, (SCREEN_W/2)+10, (SCREEN_H/2)+10);
     // popup box.
-    drawShape(SDL_GetColour(dark_blue), SCREEN_W/4, SCREEN_H/4, SCREEN_W/2, SCREEN_H/2);
+    SDL_DrawShape(Colour_DarkBlue, SCREEN_W/4, SCREEN_H/4, SCREEN_W/2, SCREEN_H/2);
     // text to draw.
-    drawText(font, x, y, colour, text);
+    SDL_DrawText(font, x, y, colour, text);
 }
 
 int yesNoBox(int mode, int x, int y, char *question)
 {
     printOptionList(mode);
-    popUpBox(fntMedium, x, y, SDL_GetColour(white), question);
+    popUpBox(fntMedium, x, y, Colour_White, question);
     // highlight box.
-    drawShape(SDL_GetColour(faint_blue), 380, 410, 175, 65);
-    drawShape(SDL_GetColour(faint_blue), 700, 410, 190, 65);
+    SDL_DrawShape(Colour_FaintBlue, 380, 410, 175, 65);
+    SDL_DrawShape(Colour_FaintBlue, 700, 410, 190, 65);
     // option text.
-    drawButton(fntButtonBig, BUTTON_B, 410, 425, SDL_GetColour(white));
-    drawText(fntMedium, 455, 425, SDL_GetColour(white), "No");
-    drawButton(fntButtonBig, BUTTON_A, 725, 425, SDL_GetColour(white));
-    drawText(fntMedium, 770, 425, SDL_GetColour(white), "Yes");
+    SDL_DrawButton(fntButtonBig, Font_Button_B, 410, 425, Colour_White);
+    SDL_DrawText(fntMedium, 455, 425, Colour_White, "No");
+    SDL_DrawButton(fntButtonBig, Font_Button_A, 725, 425, Colour_White);
+    SDL_DrawText(fntMedium, 770, 425, Colour_White, "Yes");
 
-    updateRenderer();
+    SDL_UpdateRenderer();
 
     int res = 0;
     int touch_lock = OFF;
     touchPosition touch;
-    u32 tch = 0;
-    u32 touch_count = hidTouchCount();
+    Uint32 tch = 0;
+    Uint32 touch_count = hidTouchCount();
 
     // check if the user is already touching the screen.
     if (touch_count > 0) touch_lock = ON;
@@ -118,9 +129,9 @@ int yesNoBox(int mode, int x, int y, char *question)
 
 void errorBox(int x, int y, char *errorText)
 {
-    popUpBox(fntMedium, x, y, SDL_GetColour(white), errorText);
-    drawImageScale(error_icon, 570, 340, 128, 128);
-    updateRenderer();
+    popUpBox(fntMedium, x, y, Colour_White, errorText);
+    SDL_DrawImageScale(error_icon, 570, 340, 128, 128);
+    SDL_UpdateRenderer();
 
     sleep(3);
 }

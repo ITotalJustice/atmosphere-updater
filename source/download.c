@@ -4,11 +4,13 @@
 #include <switch.h>
 
 #include "download.h"
+#include "sdl_easy.h"
 #include "menu.h"
 #include "util.h"           // for ON / OFF defines.
 
 #define API_AGENT           "ITotalJustice"
 #define DOWNLOAD_BAR_MAX    500
+
 
 struct MemoryStruct
 {
@@ -51,13 +53,13 @@ int download_progress(void *p, double dltotal, double dlnow, double ultotal, dou
     if (counter == 0 || counter == 2 || counter == 4 || counter == 6 || counter == 8)
     {
         printOptionList(0);
-        popUpBox(fntSmall, 350, 250, SDL_GetColour(white), "Downloading...");
+        popUpBox(fntSmall, 350, 250, Colour_White, "Downloading...");
         // bar max size
-        drawShape(SDL_GetColour(white), 380, 380, DOWNLOAD_BAR_MAX, 30);
+        SDL_DrawShape(Colour_White, 380, 380, DOWNLOAD_BAR_MAX, 30);
         // progress bar being filled
-        drawShape(SDL_GetColour(faint_blue), 380, 380, (dlnow / dltotal) * DOWNLOAD_BAR_MAX, 30);
+        SDL_DrawShape(Colour_FaintBlue, 380, 380, (dlnow / dltotal) * DOWNLOAD_BAR_MAX, 30);
 
-        updateRenderer();
+        SDL_UpdateRenderer();
     }
 	return 0;
 }
@@ -104,7 +106,6 @@ int downloadFile(const char *url, const char *output, int api_mode)
 
             if (res == CURLE_OK) return 0;
         }
-        fclose(fp);
     }
 
     errorBox(350, 250, "Download failed...");
