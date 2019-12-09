@@ -62,6 +62,9 @@ int main(int argc, char **argv)
     // write sys / ams version to char*.
     writeSysVersion();
     writeAmsVersion();
+    refreshScreen(/*loaded=*/0);
+    updateRenderer();
+    writeLatestAtmosphereVersion();
 
     // set the cursor position to 0.
     short cursor = 0;
@@ -70,7 +73,7 @@ int main(int argc, char **argv)
     int touch_lock = OFF;
     u32 tch = 0;
     touchPosition touch;
-    
+
     // muh loooooop
     while(appletMainLoop())
     {

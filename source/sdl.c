@@ -4,7 +4,7 @@
 /* I would greatly appreaciate it :) */
 
 
-#include <SDL2/SDL_image.h>
+#include <SDL_image.h>
 #include <switch.h>
 
 #include "sdl.h"
@@ -160,7 +160,7 @@ void sdlInit()
 
     main_window = SDL_CreateWindow("totaljustice", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_W, SCREEN_H, SDL_WINDOW_SHOWN);
     main_renderer = SDL_CreateRenderer(main_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    
+
     // highest quality
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 
