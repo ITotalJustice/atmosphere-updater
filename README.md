@@ -50,6 +50,23 @@ __**The app currently has 5 main options.**__
 
 ----
 
+# Build
+
+Install the Devkitpro tool chain from [here](https://devkitpro.org/wiki/Getting_Started).
+
+ Using pacman (installed with devkitpro) install the following libraries:
+* switch-curl
+* switch-freetype
+* switch-sdl2
+* switch-sdl2_gfx
+* switch-sdl2_image
+* switch-sdl2_ttf
+* switch-zlib
+
+If you have any problems building, feel free to open an issue including any build errors.
+ 
+----
+
 # Special Thanks!
 
 [toph](https://github.com/sudot0ph) for the design of the app icon, as well as the most icons used within the app!
