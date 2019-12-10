@@ -7,10 +7,10 @@
 
 #define APP_VERSION "Atmosphere Updater: 0.5.1"
 
-void refreshScreen()
+void refreshScreen(char loaded)
 {
     clearRenderer();
-    
+
     // app version.
     drawText(fntMedium, 40, 40, SDL_GetColour(white), APP_VERSION);
 
@@ -20,16 +20,23 @@ void refreshScreen()
     // atmosphere version.
     drawText(fntSmall, 25, 230, SDL_GetColour(white), getAmsVersion());
 
-    //drawText(fntMedium, 120, 225, SDL_GetColour(white), "Menu Here"); // menu options
-    drawButton(fntButton, BUTTON_A, 970, 672, SDL_GetColour(white));
-    drawText(fntSmall, 1010, 675, SDL_GetColour(white), "Select");
-    drawButton(fntButton, BUTTON_PLUS, 1145, 672, SDL_GetColour(white));
-    drawText(fntSmall, 1185, 675, SDL_GetColour(white), "Exit");
+    if (loaded)
+    {
+      // write the latest version number, if an update is available
+      drawText(fntSmall, 25, 260, SDL_GetColour(white), getLatestAtmosphereVersion());
+
+      //drawText(fntMedium, 120, 225, SDL_GetColour(white), "Menu Here"); // menu options
+      drawButton(fntButton, BUTTON_A, 970, 672, SDL_GetColour(white));
+      drawText(fntSmall, 1010, 675, SDL_GetColour(white), "Select");
+
+      drawButton(fntButton, BUTTON_PLUS, 1145, 672, SDL_GetColour(white));
+      drawText(fntSmall, 1185, 675, SDL_GetColour(white), "Exit");
+    }
 }
 
 void printOptionList(int cursor)
 {
-    refreshScreen();
+    refreshScreen(/*loaded=*/1);
 
     char *option_list[]      = {    "Full Atmosphere update (recommended)", \
                                     "Update Atmosphere (ignoring .ini files)", \

@@ -8,11 +8,14 @@
 #include "download.h"
 #include "reboot_payload.h"
 
-#define TEMP_FILE               "/switch/atmosphere-updater/temp"
-#define FILTER_STRING           "browser_download_url\":\""
+#define TEMP_FILE                 "/switch/atmosphere-updater/temp"
+#define FILTER_STRING             "browser_download_url\":\""
+#define VERSION_FILTER_STRING     "tag_name\":\""
 
 char g_sysVersion[50];
 char g_amsVersion[50];
+char g_amsVersionWithoutHash[15];
+char g_latestAtmosphereVersion[50];
 
 
 char *getSysVersion()
@@ -25,12 +28,17 @@ char *getAmsVersion()
     return g_amsVersion;
 }
 
+char *getLatestAtmosphereVersion()
+{
+    return g_latestAtmosphereVersion;
+}
+
 void writeSysVersion()
 {
 	Result ret = 0;
 	SetSysFirmwareVersion ver;
 
-	if (R_FAILED(ret = setsysGetFirmwareVersion(&ver))) 
+	if (R_FAILED(ret = setsysGetFirmwareVersion(&ver)))
     {
 		printf("GetFirmwareVersion() failed: 0x%x.\n\n", ret);
 		return;
@@ -49,13 +57,13 @@ void writeAmsVersion()
     SplConfigItem SplConfigItem_ExosphereVersion = (SplConfigItem)65000;
     SplConfigItem SplConfigItem_ExosphereVerHash = (SplConfigItem)65003;
 
-	if (R_FAILED(ret = splGetConfig(SplConfigItem_ExosphereVersion, &ver))) 
+	if (R_FAILED(ret = splGetConfig(SplConfigItem_ExosphereVersion, &ver)))
     {
 		printf("SplConfigItem_ExosphereVersion() failed: 0x%x.\n\n", ret);
 		return;
 	}
 
-    if (R_FAILED(ret = splGetConfig(SplConfigItem_ExosphereVerHash, &fullHash))) 
+    if (R_FAILED(ret = splGetConfig(SplConfigItem_ExosphereVerHash, &fullHash)))
     {
 		printf("SplConfigItem_ExosphereVerHash() failed: 0x%x.\n\n", ret);
 		return;
@@ -67,10 +75,30 @@ void writeAmsVersion()
 
     // write ams version number + hash.
     char amsVersionNum[25];
-	snprintf(amsVersionNum, sizeof(amsVersionNum), "%lu.%lu.%lu (%s)", (ver >> 32) & 0xFF,  (ver >> 24) & 0xFF, (ver >> 16) & 0xFF, shortHash);
+    snprintf(g_amsVersionWithoutHash, sizeof(g_amsVersionWithoutHash), "%lu.%lu.%lu", (ver >> 32) & 0xFF,  (ver >> 24) & 0xFF, (ver >> 16) & 0xFF);
+	snprintf(amsVersionNum, sizeof(amsVersionNum), "%s (%s)", g_amsVersionWithoutHash, shortHash);
 
     // write string + ams version to global variable.
     snprintf(g_amsVersion, sizeof(g_amsVersion), "Atmosphere Ver: %s", amsVersionNum);
+}
+
+void writeLatestAtmosphereVersion()
+{
+  // Download the github API file and then parse out the version number.
+  char *updateString = "- Up to date";
+  if (!downloadFile(AMS_URL, TEMP_FILE, ON))
+  {
+    char latestVersionNumber[10];
+    if (!parseSearch(TEMP_FILE, VERSION_FILTER_STRING, latestVersionNumber)) {
+      if (strcmp(g_amsVersionWithoutHash, latestVersionNumber) != 0)
+      {
+        char buffer[50];
+        snprintf(buffer, sizeof(buffer), "- Update available: %s", latestVersionNumber);
+        updateString = buffer;
+      }
+    }
+  }
+  snprintf(g_latestAtmosphereVersion, sizeof(g_latestAtmosphereVersion), updateString);
 }
 
 void copyFile(char *src, char *dest)
@@ -95,7 +123,7 @@ void copyFile(char *src, char *dest)
 int parseSearch(char *parse_string, char *filter, char* new_string)
 {
     FILE *fp = fopen(parse_string, "r");
-    
+
     if (fp)
     {
         char c;
@@ -188,7 +216,7 @@ void update_app()
         remove(OLD_APP_PATH);
         // rename the downloaded temp_file with the correct nro name.
         rename(TEMP_FILE, APP_OUTPUT);
-        // using errorBox as a message window on this occasion. 
+        // using errorBox as a message window on this occasion.
         errorBox(400, 250, "      Update complete!\nRestart app to take effect");
     }
 }
