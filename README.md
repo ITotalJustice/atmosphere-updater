@@ -82,10 +82,5 @@ If you have any problems building, feel free to open an issue including any buil
 
 [KrankRival](https://github.com/KranKRival) for the initial sys / ams version pr (and for motivating me to work on touch controls)!
 
-----
 
-# Patreon
 
-Feel free to support me on patreon, I would really appreciate it!
-
-<a href="https://www.patreon.com/totaljustice"><img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" alt="Patreon donate button" /> </a>
