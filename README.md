@@ -8,7 +8,7 @@ Update Atmosphere cfw from within your switch!
 
 # Install
 
-Download the the latest release from [here](https://github.com/ITotalJustice/atmosphere-updater/releases).
+Download the the latest release from [here](https://github.com/ELY3M/atmosphere-updater---modded-by-ELY-M/releases).
 
 Move the downloaded .nro onto you nintendo switch sd card inside the folder **/switch/atmosphere-updater**.
 
@@ -18,7 +18,7 @@ That's it!
 
 # Usage
 
-__**The app currently has 5 main options.**__
+__**The app currently has 6 main options.**__
 
 **Full Atmosphere Update:**
 
@@ -36,6 +36,11 @@ __**The app currently has 5 main options.**__
 * If option to update Hekate + Atmosphere is selected, the new fusee-primary.bin is copied to **/bootloader/payloads/fusee-primary.bin**.
 * Replaces **/atmosphere/reboot_payload.bin** with the new Hekate payload.
 * Copies new Hekate payload to **/bootloader/update.bin**.
+
+**Update Hekate files only (leave ams bin files alone):**
+
+* Installs the latest release of Hekate.
+* this option is for people who want to keep reboot to atmosphere bin
 
 **Update App:**
 
