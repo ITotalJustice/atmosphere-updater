@@ -5,7 +5,7 @@
 #include "touch.h"
 #include "util.h"
 
-#define APP_VERSION "Atmosphere Updater: 0.5.1"
+#define APP_VERSION "Atmosphere Updater: 0.5.1-elys-mod"
 
 void refreshScreen(char loaded)
 {
@@ -40,12 +40,14 @@ void printOptionList(int cursor)
 
     char *option_list[]      = {    "Full Atmosphere update (recommended)", \
                                     "Update Atmosphere (ignoring .ini files)", \
+                                    "Update Hekate files only", \								
                                     "Update Hekate (for hekate / kosmos users)", \
                                     "Update app", \
                                     "Reboot (reboot to payload)" };
 
     char *description_list[] = {    "Update everything for Atmosphere", \
                                     "Update Atmosphere ignoring .ini files (if they exist)", \
+                                    "Update hekate files only without overwriting AMS reboot_payload.bin", \								
                                     "Update hekate with option to also update Atmosphere", \
                                     "Update app and removes old version", \
                                     "Reboots switch (recommended after updating)" };

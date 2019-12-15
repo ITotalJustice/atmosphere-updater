@@ -119,6 +119,11 @@ int main(int argc, char **argv)
                     update_ams_hekate(AMS_URL, AMS_OUTPUT, cursor);
                 break;
 
+            case UP_HEKATE_FILES:
+                if (yesNoBox(cursor, 390, 250, "Update Hekate files only?") == YES)
+                    update_ams_hekate(HEKATE_URL, HEKATE_OUTPUT, cursor);
+                break;
+				
             case UP_HEKATE:
                 if (yesNoBox(cursor, 390, 250, "Update Hekate?") == YES)
                     update_ams_hekate(HEKATE_URL, HEKATE_OUTPUT, cursor);
